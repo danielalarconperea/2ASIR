@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agenda - Buscar</title>
+    <style>
+        /* (Puedes copiar los mismos estilos de tus otros archivos) */
+        body { font-family: sans-serif; width: 800px; margin: 20px auto; }
+        .contactos-lista { background-color: #f9f9f9; border: 1px solid #eee; padding: 10px; }
+        nav { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <h1>Agenda Virtual PHP</h1>
+
+    <nav>
+        <a href="formulario.html">Añadir Contacto</a> | 
+        <a href="mostrar_contactos.php">Ver Todos</a> | 
+        <a href="buscar.html">Buscar</a>
+    </nav>
+
+    <h2>Buscar Contacto</h2>
+    
+    <form action="resultados_busqueda.php" method="POST">
+        <label for="termino">Buscar:</label>
+        <input type="text" id="termino" name="termino_busqueda" required>
+        <button type="submit">Buscar</button>
+    </form>
+
+</body>
+</html>

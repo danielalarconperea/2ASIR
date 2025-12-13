@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <title>Problema2</title>
+        <meta charset="utf-8">
+        <style>
+            error
+            {
+                color:red;
+                margin-left: 5px;
+
+            }
+           
+        </style>
+    </head>
+    <body>
+                        
+        <form id="Form" name="fc">
+            Nombre de Usuario : <input type="text" name="nombre" id="nombre" placeholder=""><error id="nombre1" name="error"></error>
+            <br><br>
+            Contraseña: <input type="text" name="contraseña" id="contraseña" placeholder=""><error id="contraseña1"></error>
+            <br><br>
+            Confirma tu Contraseña: <input type="text" name="contra1" id="contra1" placeholder=""><error id="contraseña2"></error>
+            <br><br>
+            Edad: <input type="text" id="edad" name="edad" placeholder=""><error id="edad1"></error>
+            <br><br>
+            Correo electronico: <input type="email" name="gmail" id="gmail" placeholder="@"><error id="gmail1"></error>
+            <br><br>
+            Telefono: <input type="text" name="telefono" id="telefono" placeholder=""><error id="telefono1"></error>
+            <br><br>
+            Numero de Integrantes: 
+            <select name="ni">
+                <option>Elige una opcion</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
+            </select><error id="ni1"></error>
+            <br><br>
+            Fecha de nacimiento <input type="text" placeholder="" id="fech" name="fech"><error id="fech1"></error>
+            <br><br>
+            Sexo: 
+            <select name="sexo">
+                <option>Elige una opcion</option>
+                <option>Masculino</option>
+                <option>Femenino</option>
+            </select><error id="sexo1"></error>
+            <br><br>
+            
+            Selecciona tu pasatiempo: <br>
+            <input type="checkbox" name="pasatiempo">Programar<br>
+            <input type="checkbox" name="pasatiempo">Leer<br>
+            <input type="checkbox" name="pasatiempo">Bailar<br>
+           
+            <div id="boton2">
+                <input type="button" id="botonB" value="Aceptar" onclick="enviar()">
+            </div> 
+           
+            <script>
+                function enviar(){
+                    
+                    var nombre = document.getElementById('nombre').value.trim();
+                    
+                    var contraseña = document.getElementById('contraseña').value.trim();
+                    var contra1 = document.getElementById('contra1').value.trim();
+                    var edad = document.getElementById('edad').value.trim();
+                    var gmail = document.getElementById('gmail').value.trim();
+                    var telefono = document.getElementById('telefono').value.trim();
+                    var ni = document.getElementsByName('ni');
+                    var fech = document.getElementById('fech').value.trim();
+                    var sexo = document.getElementsByName('sexo');
+                    var pasatiempo = document.getElementsByName('pasatiempo');
+                    
+                    var errorNombre = document.getElementById('nombre1');
+                    var errorContraseña = document.getElementById('contraseña1');
+                    var errorContra1 = document.getElementById('contraseña2');
+                    var errorEdad = document.getElementById('edad1');
+                    var errorGmail = document.getElementById('gmail1');
+                    var errorTelefono = document.getElementById('telefono1');
+                    var errorNi = document.getElementById('ni1');
+                    var errorFech = document.getElementById('fech1');
+                    var errorSexo = document.getElementById('sexo1');
+                    var formularioValido = true;
+                    
+                    var arroba = false
+
+                    if (nombre === ''){
+                        errorNombre.innerHTML = 'Campo Obligatorio';
+                        formularioValido = false;
+                    }else if(nombre.length<3){
+                        errorNombre.innerHTML = 'Requiere por lo menos 3 caracteres';
+                        formularioValido = false;
+                    }else{
+                        errorNombre.innerHTML = '';
+                    }
+                    if (contraseña === ''){
+                        errorContraseña.innerHTML = 'Campo Obligatorio';
+                        formularioValido = false;
+                    }else if(contraseña.length<3){
+                        errorContraseña.innerHTML = 'Debe contener entre 5 y 30 caracteres';
+                        formularioValido = false;
+                    }else{
+                        errorContraseña.innerHTML = '';
+                    }
+                    if (contra1 === ''){
+                        errorContra1.innerHTML = 'Campo Obligatorio';
+                        formularioValido = false;
+                    }else if(contra1 !== contraseña){
+                        errorContra1.innerHTML = 'Coincidir con su contraseña anterior';
+                        formularioValido = false;
+                    }else{
+                        errorContra1.innerHTML = '';
+                    }
+                    if (edad === ''){
+                        errorEdad.innerHTML = 'Campo Obligatorio';
+                        formularioValido = false;
+                    }else if(edad<18 || edad>90){
+                        errorEdad.innerHTML = 'Solo entre 18 y 90 años';
+                        formularioValido = false;
+                    }else{
+                        errorEdad.innerHTML = '';
+                    }
+                    for(var i=0;i<gmail.length;i++){
+                        if(gmail[i]==='@'){
+                            arroba=true;
+                        }
+                    }
+                    if (gmail === ''){
+                        errorGmail.innerHTML = 'Campo Obligatorio';
+                        formularioValido = false;
+                    }else if(arroba==false){
+                        errorGmail.innerHTML = 'introduce una dirección valida';
+                        formularioValido = false;
+                    }else{
+                        errorGmail.innerHTML = '';
+                    }
+                    if (telefono === ''){
+                        errorTelefono.innerHTML = 'Campo Obligatorio';
+                        formularioValido = false;
+                    }else if(telefono.length == 10){
+                        errorTelefono.innerHTML = 'Número con 10 digitos';
+                        formularioValido = false;
+                    }else{
+                        errorTelefono.innerHTML = '';
+                    }
+
+
+                    if (contra1 === ''){
+                        errorContra1.innerHTML = 'Campo Obligatorio';
+                        formularioValido = false;
+                    }else if(contra1 !== contraseña){
+                        errorContra1.innerHTML = 'Coincidir con su contraseña anterior';
+                        formularioValido = false;
+                    }else{
+                        errorContra1.innerHTML = '';
+                    }
+                    if(formularioValido){
+                        alert('formulario enviado correctamente')
+                        document.getElementById('Form').submit();
+                    }
+                }
+            </script>
+        </form>
+    </body>
+</html>

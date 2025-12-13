@@ -1,0 +1,79 @@
+enable
+configure terminal
+
+ip routing
+
+vlan 10
+ name PRIMAVERA
+vlan 20
+ name VERANO
+exit
+
+interface Vlan10
+ description Gateway Red PRIMAVERA
+ ip address 192.168.1.1 255.255.255.0
+ no switchport
+ ip nat inside
+ ip access-group PRIMAVERA_IN in
+ 
+interface Vlan20
+ description Gateway Red VERANO
+ ip address 192.168.0.1 255.255.255.0
+ ip nat inside
+ ip access-group VERANO_IN in
+
+interface GigabitEthernet1/0/1
+ description Enlace a SW1
+ switchport mode trunk
+!
+interface GigabitEthernet1/0/2
+ description Enlace a SW2
+ switchport mode trunk
+
+interface GigabitEthernet1/0/24
+ description Enlace a INTERNET
+ no switchport
+ ip address 209.7.7.1 255.255.255.0
+ ip nat outside
+ ip access-group INTERNET_IN in
+
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet1/0/24
+
+
+
+ip access-list standard NAT_ACL
+ permit 192.168.1.0 0.0.0.255
+ permit 192.168.0.0 0.0.0.255
+exit
+
+ip nat inside source list NAT_ACL interface GigabitEthernet1/0/24 overload
+
+ip access-list extended INTERNET_IN
+ deny   ip any 192.168.1.0 0.0.0.255
+ deny   ip any 192.168.0.0 0.0.0.255
+ permit ip any any
+exit
+
+
+ip access-list extended PRIMAVERA_IN
+ permit ip 192.168.1.0 0.0.0.255 192.168.0.128 0.0.0.127
+ 
+ deny   ip 192.168.1.0 0.0.0.255 192.168.0.0 0.0.0.255
+ 
+ permit tcp 192.168.1.0 0.0.0.255 any eq 80  !HTTP (WEB)
+ permit tcp 192.168.1.0 0.0.0.255 any eq 443 !HTTPS (WEB)
+ permit udp 192.168.1.0 0.0.0.255 any eq 69  !TFTP
+ permit tcp 192.168.1.0 0.0.0.255 any eq 20  !FTP-data
+ permit tcp 192.168.1.0 0.0.0.255 any eq 21  !FTP-control
+ permit icmp 192.168.1.0 0.0.0.255 any       !ICMP (Ping)
+ 
+exit
+
+
+ip access-list extended VERANO_IN
+ deny   ip 192.168.0.0 0.0.0.255 192.168.1.16 0.0.0.15
+ deny   ip 192.168.0.0 0.0.0.255 192.168.1.32 0.0.0.1
+ 
+ permit ip 192.168.0.0 0.0.0.255 any
+ 
+exit

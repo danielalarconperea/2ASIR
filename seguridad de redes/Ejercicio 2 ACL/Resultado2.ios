@@ -1,0 +1,124 @@
+enable
+configure terminal
+
+ip routing
+
+! vlan 10
+!  name PRIMAVERA
+! vlan 20
+!  name VERANO
+! exit
+
+interface GigabitEthernet1/0/1
+ description Gateway Red PRIMAVERA
+ no switchport
+ ip address 192.168.1.1 255.255.255.0
+!  ip nat inside
+ 
+interface GigabitEthernet1/0/2
+ description Gateway Red VERANO
+ no switchport
+ ip address 192.168.0.1 255.255.255.0
+!  ip nat inside
+
+interface GigabitEthernet1/0/24
+ description Enlace a INTERNET
+ no switchport
+ ip address 209.7.7.1 255.255.255.0
+!  ip nat outside
+
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet1/0/24
+
+! ip access-list standard NAT_ACL
+!  permit 192.168.1.0 0.0.0.255
+!  permit 192.168.0.0 0.0.0.255
+! exit
+
+! ip nat inside source list NAT_ACL interface GigabitEthernet1/0/24 overload
+
+
+ip access-list extended INTERNET_IN
+ deny ip any 192.168.1.0 0.0.0.255 
+ deny ip any 192.168.0.0 0.0.0.255 
+ 
+ permit ip any any
+exit
+
+
+ip access-list extended PRIMAVERA_IN
+ permit ip 192.168.1.0 0.0.0.128 192.168.0.0 0.0.0.127
+ 
+ permit tcp 192.168.1.0 0.0.0.255 any eq 80
+ permit tcp 192.168.1.0 0.0.0.255 any eq 443
+ permit udp 192.168.1.0 0.0.0.255 any eq 69
+ permit tcp 192.168.1.0 0.0.0.255 any eq 20
+ permit tcp 192.168.1.0 0.0.0.255 any eq 21
+ permit icmp 192.168.1.0 0.0.0.255 any
+ 
+ deny ip 192.168.1.0 0.0.0.255 any
+exit
+
+! access-list 1 deny ip 192.168.0.16 0.0.0.15
+! access-list 1 deny ip 192.168.0.32 0.0.0.1
+! access-list 1 permit ip 192.168.0.0 0.0.0.255 any
+
+
+ip access-list extended VERANO_IN
+ deny ip 192.168.0.0 0.0.0.255 192.168.1.16 0.0.0.15
+ deny ip 192.168.0.0 0.0.0.255 192.168.1.32 0.0.0.1
+
+ permit ip 192.168.0.0 0.0.0.255 any
+exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ip access-list extended INTERNET_IN
+ deny   ip any 192.168.1.0 0.0.0.255
+ deny   ip any 192.168.0.0 0.0.0.255
+ permit ip any any
+exit
+
+
+ip access-list extended PRIMAVERA_IN
+ permit ip 192.168.1.0 0.0.0.255 192.168.0.128 0.0.0.127
+ 
+ deny   ip 192.168.1.0 0.0.0.255 192.168.0.0 0.0.0.255
+ 
+ permit tcp 192.168.1.0 0.0.0.255 any eq 80  
+ permit tcp 192.168.1.0 0.0.0.255 any eq 443 
+ permit udp 192.168.1.0 0.0.0.255 any eq 69  
+ permit tcp 192.168.1.0 0.0.0.255 any eq 20  
+ permit tcp 192.168.1.0 0.0.0.255 any eq 21  
+ permit icmp 192.168.1.0 0.0.0.255 any       
+ 
+exit
+
+
+ip access-list extended VERANO_IN
+ deny   ip 192.168.0.0 0.0.0.255 192.168.1.16 0.0.0.15
+ deny   ip 192.168.0.0 0.0.0.255 192.168.1.32 0.0.0.1
+ 
+ permit ip 192.168.0.0 0.0.0.255 any
+
+exit
+
+
+interface GigabitEthernet1/0/1
+ ip access-group PRIMAVERA_IN in
+
+interface GigabitEthernet1/0/2
+ ip access-group VERANO_IN in
+
+interface GigabitEthernet1/0/24
+ ip access-group INTERNET_IN in

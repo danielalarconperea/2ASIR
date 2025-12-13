@@ -1,0 +1,1020 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+### 1\. 🌐 Configuraciones Globales (Aplicar en Alpedrete, Titulcia, SW2 e ISP) #
+################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+configure terminal
+
+lldp run
+service timestamps log datetime msec
+logging host 172.20.25.10
+ntp server 172.20.25.10
+service timestamps log datetime msec
+
+ip domain-name miempresa.local
+crypto key generate rsa modulus 1024
+username admin privilege 15 secret 0 Cisco123
+
+ip access-list standard SSH_ACL
+ permit host 172.20.25.11
+ deny any log
+
+line vty 0 4
+ access-group SSH_ACL in
+ transport input ssh
+ login local
+exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###############################################
+### 2\. 🛡️ Switch SW2 (Switch Capa 3 - Core) #
+##############################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+enable
+configure terminal
+
+ip routing
+
+hostname SW2
+
+
+vlan 10
+ name FUNDICION
+vlan 20
+ name DISENO
+vlan 30
+ name CARPINTERIA_METALICA
+vlan 40
+ name ADMIN
+
+interface Vlan10
+ description Gateway para FUNDICION
+ ip address 172.20.2.1 255.255.255.0
+exit
+
+interface Vlan20
+ description Gateway para DISENO
+ ip address 172.20.3.1 255.255.255.0
+exit
+
+interface Vlan30
+ description Gateway para CARPINTERIA_METALICA
+ ip address 172.20.1.1 255.255.255.0
+ ip access-group CARPINTERIA_IN in
+exit
+
+interface Vlan40
+ description Gateway para ADMIN
+ ip address 172.20.25.1 255.255.255.0
+exit
+
+ip access-list extended CARPINTERIA_IN
+ deny   tcp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 20
+ deny   tcp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 21
+ deny   udp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 69
+ deny   icmp 172.20.1.0 0.0.0.255 172.20.3.0 0.0.0.255
+ permit ip 172.20.1.0 0.0.0.255 any
+exit
+
+interface GigabitEthernet1/0/22
+ description Enlace a Router Alpedrete
+ no switchport
+ ip address 172.20.255.2 255.255.255.252
+exit
+
+interface GigabitEthernet1/0/21
+ description Enlace a Router Titulcia
+ no switchport
+ ip address 172.20.255.6 255.255.255.252
+exit
+
+interface GigabitEthernet1/0/23
+ description Enlace a Router ISP
+ no switchport
+ ip address 172.20.255.9 255.255.255.252
+exit
+
+router ospf 1
+ network 172.20.1.0 0.0.0.255 area 0
+ network 172.20.2.0 0.0.0.255 area 0
+ network 172.20.3.0 0.0.0.255 area 0
+ network 172.20.25.0 0.0.0.255 area 0
+ network 172.20.255.0 0.0.0.3 area 0
+ network 172.20.255.4 0.0.0.3 area 0
+ network 172.20.255.8 0.0.0.3 area 0
+exit
+
+
+
+
+
+
+
+
+
+
+
+##############################
+### 3\. 🔩 Router Alpedrete #
+#############################
+
+
+
+enable
+configure terminal
+
+hostname Alpedrete
+
+
+interface GigabitEthernet0/0/0
+ description Gateway para FORJA-Artesana
+ ip address 172.20.0.1 255.255.255.0
+ ip access-group FORJA_IN in
+exit
+
+interface GigabitEthernet0/0/1
+ description Enlace a SW2
+ ip address 172.20.255.1 255.255.255.252
+exit
+
+interface Serial0/1/0
+ description Enlace WAN a Titulcia
+ ip address 192.168.255.1 255.255.255.252
+ clock rate 128000 
+exit
+
+ip access-list extended FORJA_IN
+ deny   ip 172.20.0.0 0.0.0.255 172.20.2.0 0.0.0.255
+ deny   ip 172.20.0.0 0.0.0.255 172.20.3.0 0.0.0.255
+ permit icmp 172.20.0.0 0.0.0.255 any
+ permit ip 172.20.0.0 0.0.0.255 any
+exit
+
+router ospf 1
+ network 172.20.0.0 0.0.0.255 area 0
+ network 172.20.255.0 0.0.0.3 area 0
+ network 192.168.255.0 0.0.0.3 area 0
+exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###############################
+### 4\. 🔩 Router Titulcia ###
+##############################
+
+
+
+
+
+
+
+
+
+
+
+
+enable
+configure terminal
+
+hostname Titulcia
+
+
+interface Serial0/1/0
+ description Enlace WAN a Alpedrete
+ ip address 192.168.255.2 255.255.255.252
+exit
+
+interface GigabitEthernet0/0/2
+ description Enlace a SW2
+ ip address 172.20.255.5 255.255.255.252
+exit
+
+interface GigabitEthernet0/0/0.10
+ encapsulation dot1Q 10
+ ip address 172.20.2.1 255.255.255.0
+
+interface GigabitEthernet0/0/0.20
+ encapsulation dot1Q 20
+ ip address 172.20.3.1 255.255.255.0
+
+
+router ospf 1
+ router-id 3.3.3.3
+ log-adjacency-changes
+ network 172.20.2.0 0.0.0.255 area 0
+ network 172.20.3.0 0.0.0.255 area 0
+ network 192.168.255.0 0.0.0.3 area 0
+ network 172.20.255.4 0.0.0.3 area 0
+
+
+
+
+
+
+
+
+
+########################
+### 5\. ☁️ Router ISP #
+#######################
+
+
+
+
+
+
+
+
+
+
+enable
+configure terminal
+
+hostname ISP
+
+
+interface GigabitEthernet0/0/0
+ description Enlace INTERNO a SW2
+ ip address 172.20.255.10 255.255.255.252
+ ip nat inside
+exit
+
+interface GigabitEthernet0/0/1
+ description Enlace EXTERNO a Internet
+ ip address 209.165.200.225 255.255.255.224 
+ ip nat outside
+ ip access-group INTERNET_IN in
+exit
+
+ip access-list standard NAT_ACL
+ permit 172.20.0.0 0.0.255.255
+ip nat inside source list NAT_ACL interface GigabitEthernet0/0/0 overload
+
+ip access-list extended INTERNET_IN
+ permit tcp any any established
+ permit udp any any
+ permit icmp any any echo-reply
+ permit icmp any any time-exceeded
+ permit icmp any any unreachable
+ deny ip any any log
+exit
+
+ip route 0.0.0.0 0.0.0.0 209.165.200.226
+
+router ospf 1
+ network 172.20.255.8 0.0.0.3 area 0
+ default-information originate
+exit
+
+
+
+
+
+
+
+
+
+!----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+access-list 1 permit 192.168.0.7 0.0.0.0
+access-list 1 deny any
+
+line vty 0 2
+password cisco
+login
+access-class 1 in 
+! El trafico entra en la lista 1
+
+
+! Router R2
+enable
+configure terminal
+interface GigabitEthernet0/0
+ ip access-group 1 out
+access-list 1 deny 192.168.11.0 0.0.0.255
+access-list 1 permit any
+end
+! Router R3
+enable
+configure terminal
+interface GigabitEthernet0/0
+ ip access-group 1 out
+access-list 1 deny 192.168.10.0 0.0.0.255
+access-list 1 permit any
+end
+
+
+
+! Router R1
+enable
+configure terminal
+ip access-list standard BRANCH-OFFICE-POLICY
+ permit host 192.168.30.3
+ permit 192.168.40.0 0.0.0.255
+interface g0/0/0
+ ip access-group BRANCH-OFFICE-POLICY out
+ip access-list standard BRANCH-OFFICE-POLICY
+ 30 permit 209.165.200.224 0.0.0.31
+ 40 deny any
+end
+
+! Router R3
+enable
+configure terminal
+access-list 1 remark Allow R1 LANs Access
+access-list 1 permit 192.168.10.0 0.0.0.255
+access-list 1 permit 192.168.20.0 0.0.0.255
+access-list 1 deny any
+interface g0/0/0
+ ip access-group 1 out
+end
+
+
+!----
+
+interface FastEthernet0/0
+ ip nat inside
+interface Serial0/0/0
+ ip nat inside
+interface Serial0/0/1
+ ip nat inside
+interface Serial0/1/0
+ ip nat outside
+ip nat pool R2POOL 209.165.202.129 209.165.202.129 netmask 255.255.255.252
+ip nat inside source list R2NAT pool R2POOL overload
+ip nat inside source static 192.168.20.254 209.165.202.130
+ip access-list standard R2NAT
+ permit 192.168.10.0 0.0.0.255
+ permit 192.168.20.0 0.0.0.255
+ permit 192.168.30.0 0.0.0.255
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+!###############################################
+!###############################################
+!###############################################
+
+
+
+
+
+
+
+
+
+
+
+OSPF2
+ip route 172.20.0.0 255.25255.0 210.1.1.10
+ip route 172.22.0.0 255.255.0.0 210.1.1.10
+ 
+OSPF1
+ip route 172.20.0.0 255.25255.0 210.1.1.14
+ip route 172.22.0.0 255.255.0.0 210.1.1.14
+ 
+ 
+
+
+
+
+
+! ############################################################
+! #############         CONFIGURACIÓN R1         #############
+! ############################################################
+
+
+
+
+
+
+
+
+
+
+
+enable
+configure terminal
+hostname R1
+ 
+! configuración básica
+enable secret cisco
+line console 0
+ password cisco
+ login
+line vty 0 15
+ password cisco
+ login
+ transport input ssh
+ 
+
+! 6. Configuración Interfaces R1
+interface GigabitEthernet0/2/0
+ description Enlace WAN hacia Internet
+ ip address 210.1.1.14 255.255.255.252
+ no shutdown
+ 
+interface GigabitEthernet0/3/0
+ description Enlace WAN hacia Internet
+ ip address 210.1.1.10 255.255.255.252
+ no shutdown
+ 
+interface GigabitEthernet0/0
+ description Enlace hacia CORE
+ ip address 192.168.255.13 255.255.255.252
+ no shutdown
+ 
+! 6. Rutas Estáticas en R1
+! Ruta por defecto hacia Internet
+ip route 0.0.0.0 0.0.0.0 210.1.1.13 5
+ip route 0.0.0.0 0.0.0.0 210.1.1.9
+ 
+! 10. Configuración SSH (Ejemplo básico)
+ip domain-name r1.Dominio.local
+crypto key generate rsa modulus 1024
+username tuAdminR1 privilege 15 secret tuPassAdminR1
+line vty 0 15
+ login local
+ transport input ssh
+ 
+
+
+
+
+
+ 
+! ############################################################
+! #############        CONFIGURACIÓN CORE        #############
+! ############################################################
+
+
+
+
+
+
+
+
+enable
+configure terminal
+hostname CORE
+ 
+! 1. Configuración Básica
+enable secret cisco
+line console 0
+ password cisco
+ login
+line vty 0 15
+ password cisco
+ login
+ transport input ssh
+ 
+! 2. Creación de VLANs
+vlan 10
+ name VLAN10
+vlan 20
+ name VLAN20
+vlan 100
+ name NATIVA_ADMIN
+vlan 666
+ name AGUJERO_NEGRO
+exit
+ ! Aunque la SVI estará en SW2, la VLAN debe existir
+ 
+interface range GigabitEthernet1/0/9-10
+ description hosts
+ switchport mode access
+ switchport access vlan 10
+exit
+ 
+interface range GigabitEthernet1/0/18-19
+ description hosts
+ switchport mode access
+ switchport access vlan 20
+exit
+ 
+! 5. Habilitar Enrutamiento L3
+ip routing
+ 
+! 3. Configuración Enlaces L3 (Puertos Enrutados)
+interface GigabitEthernet1/0/1
+ description Enlace L3 hacia SW1
+ no switchport
+ ip address 192.168.255.1 255.255.255.252
+ no shutdown
+ 
+interface GigabitEthernet1/0/2
+ description Enlace L3 hacia SW2
+ no switchport
+ ip address 192.168.255.5 255.255.255.252
+ no shutdown
+ 
+interface GigabitEthernet1/0/3
+ description Enlace L3 hacia R1
+ no switchport
+ ip address 192.168.255.14 255.255.255.252
+ no shutdown
+ 
+! 5. SVI de Gestión (Opcional, pero útil para alcanzar el switch) IP para gestión/DHCP Server Binding
+interface Vlan100
+ description SVI Gestion CORE
+ ip address 192.168.100.1 255.255.255.0
+ no shutdown
+ 
+interface Vlan10
+ description SVI Gestion CORE
+ ip address 172.22.0.1 255.255.255.0
+ no shutdown
+ 
+interface Vlan20
+ description SVI Gestion CORE
+ ip address 172.22.1.1 255.255.255.0
+ no shutdown
+exit
+! 7. Rutas Estáticas en CORE
+! Ruta por defecto hacia R1
+ip route 0.0.0.0 0.0.0.0 192.168.255.13
+ 
+! Rutas hacia las subredes de SW1 (vía IP de SW1 en el enlace)
+! ip route 172.22.0.0 255.255.255.0 -- directamente conectadas en la vlan10
+! ip route 172.22.1.0 255.255.255.0 -- vlan 20
+ip route 172.22.2.0 255.255.255.0 192.168.255.2
+ 
+! Rutas hacia las subredes de SW2 (vía IP de SW2 en el enlace)
+ip route 172.22.3.0 255.255.255.0 192.168.255.2
+ip route 172.22.4.0 255.255.255.0 192.168.255.6
+ip route 172.22.5.0 255.255.255.0 192.168.255.6
+ 
+! 8. Configuración Servidor DHCP (en CORE)
+! Exclusiones (ajustar según las IPs de gateway en SW1/SW2)
+ip dhcp excluded-address 172.22.0.1 172.22.0.5
+ip dhcp excluded-address 172.22.1.1 172.22.1.5
+ip dhcp excluded-address 172.22.2.1 172.22.2.5
+ip dhcp excluded-address 172.22.3.1 172.22.3.5
+ip dhcp excluded-address 172.22.4.1 172.22.4.5
+ip dhcp excluded-address 172.22.5.1 172.22.5.5
+ip dhcp excluded-address 192.168.100.1
+ 
+! Pools DHCP (Default router apunta a las SVIs en SW1/SW2)
+ip dhcp pool VLAN10_SW1
+ network 172.22.2.0 255.255.255.0
+ default-router 172.22.2.1
+ dns-server 209.7.7.7
+ 
+ip dhcp pool VLAN20_SW1
+ network 172.22.3.0 255.255.255.0
+ default-router 172.22.3.1
+ dns-server 209.7.7.7
+ 
+ip dhcp pool VLAN10_SW2
+ network 172.22.4.0 255.255.255.0
+ default-router 172.22.4.1
+ dns-server 209.7.7.7
+ 
+ip dhcp pool VLAN20_SW2
+ network 172.22.5.0 255.255.255.0
+ default-router 172.22.5.1
+ dns-server 209.7.7.7
+ 
+ip dhcp pool CORE-VLAN10
+ network 172.22.0.0 255.255.255.0
+ default-router 172.22.0.1
+ dns-server 209.7.7.7
+ 
+ip dhcp pool CORE-VLAN20
+ network 172.22.1.0 255.255.255.0
+ default-router 172.22.1.1
+ dns-server 209.7.7.7
+ 
+spanning-tree mode pvst
+spanning-tree portfast default
+spanning-tree vlan 1,10,20,100
+ 
+! 10. Seguridad CORE
+! SSH
+ip domain-name core.Dominio.local
+crypto key generate rsa modulus 1024
+username tuAdminCORE privilege 15 secret tuPassAdminCORE
+line vty 0 15
+ login local
+ transport input ssh
+! DHCP Snooping (CORE es el servidor, confía en sí mismo)
+ip dhcp snooping
+ip dhcp snooping vlan 1,10,20,100 ! Habilita en VLANs relevantes (no en 666)
+! No necesita 'trust' en los puertos L3 hacia SW1/SW2 ya que recibe peticiones de ellos.
+! Si la SVI Vlan100 se usa para el binding del servidor, debería ser confiable implícitamente.
+! ARP Inspection (Habilitar globalmente y por VLAN)
+ip arp inspection vlan 1,10,20,100
+! No marcar puertos L3 como 'trust' para ARP inspection a menos que se sepa necesario.
+ 
+! Configurar puertos no usados
+interface range FastEthernetX/Y - Z, GigabitEthernetX/Y - Z ! Rango de puertos no usados en CORE
+ switchport mode access
+ switchport access vlan 666
+ shutdown
+ 
+
+
+
+
+! ############################################################
+! #############         CONFIGURACIÓN SW1        #############
+! ############################################################
+
+
+
+
+
+enable
+configure terminal
+hostname SW1
+ 
+! 1. Configuración Básica
+enable secret cisco
+! (Resto de config básica: console, vty, ssh...)
+ 
+! 2. Creación de VLANs
+vlan 10
+ name VLAN10_SW1
+vlan 20
+ name VLAN20_SW1
+vlan 100
+ name NATIVA_ADMIN_SW1
+vlan 666
+ name AGUJERO_NEGRO_SW1
+ 
+interface range GigabitEthernet1/0/9-10
+ description hosts
+ switchport mode access
+ switchport access vlan 10
+ switchport port-security
+!switchport port-security maximum 3
+!switchport port-security violation shutdown
+ spanning-tree bpduguard enable
+exit
+ 
+interface range GigabitEthernet1/0/19-20
+ description hosts
+ switchport mode access
+ switchport access vlan 20
+ switchport port-security
+!switchport port-security maximum 3
+!switchport port-security violation shutdown
+ spanning-tree bpduguard enable
+exit
+ 
+! 5. Habilitar Enrutamiento L3
+ip routing
+ 
+! 3. Configuración Enlace L3 hacia CORE
+interface GigabitEthernet1/0/1
+ description Enlace L3 hacia CORE
+ no switchport
+ ip address 192.168.255.2 255.255.255.252
+ no shutdown
+ 
+interface GigabitEthernet1/0/3
+ description Enlace L3 hacia CORE
+ no switchport
+ ip address 192.168.255.9 255.255.255.252
+ no shutdown
+ 
+! 5. Creación de SVIs (Gateways locales)
+interface Vlan10
+ description Gateway VLAN10 SW1
+ ip address 172.22.2.1 255.255.255.0
+ no shutdown
+ ! 9. DHCP Relay (Apunta a CORE) IP SVI 100 de CORE (Servidor DHCP)
+ ip helper-address 192.168.100.1
+ 
+interface Vlan20
+ description Gateway VLAN20 SW1
+ ip address 172.22.3.1 255.255.255.0
+ no shutdown
+ ! 9. DHCP Relay (Apunta a CORE) IP SVI 100 de CORE
+ ip helper-address 192.168.100.1
+ 
+interface Vlan100
+ description SVI Gestion SW1
+ ip address 192.168.100.11 255.255.255.0
+ no shutdown
+exit
+! 7. Rutas Estáticas en SW1
+ip route 172.22.0.0 255.255.255.0 192.168.255.1
+ip route 172.22.1.0 255.255.255.0 192.168.255.1
+ip route 172.22.4.0 255.255.255.0 192.168.255.1
+ip route 172.22.5.0 255.255.255.0 192.168.255.1
+ip route 192.168.255.4 255.255.255.252 192.168.255.10
+ 
+! Ruta por defecto hacia CORE
+ip route 0.0.0.0 0.0.0.0 192.168.255.1
+ip route 0.0.0.0 0.0.0.0 192.168.255.10 5
+ 
+ 
+! 4. Configuración Puertos de Acceso (Igual que antes)
+spanning-tree mode pvst
+spanning-tree portfast default
+spanning-tree vlan 1,10,20,100
+ 
+interface range GigabitEthernet1/0/4-8, GigabitEthernet1/0/21-24, GigabitEthernet1/0/2
+ switchport mode access
+ switchport access vlan 666
+ shutdown
+ 
+
+
+
+
+
+
+
+
+
+! 10. Seguridad SW1
+! SSH (Configurar igual que en CORE/R1)
+ip domain-name sw1.Dominio.local
+crypto key generate rsa modulus 1024
+username tuAdminSW1 privilege 15 secret tuPassAdminSW1
+line vty 0 15
+ login local
+ transport input ssh
+! DHCP Snooping
+ip dhcp snooping
+ip dhcp snooping vlan 10,20,100
+! Confiar en el puerto hacia CORE (de donde vienen las respuestas DHCP)
+interface GigabitEthernet1/0/1
+ ip dhcp snooping trust
+! ARP Inspection
+ip arp inspection vlan 10,20,100
+! Confiar en el puerto hacia CORE
+interface GigabitEthernet1/0/1
+ ip arp inspection trust
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+! ############################################################
+! #############         CONFIGURACIÓN SW2        #############
+! ############################################################
+
+
+
+
+
+
+enable
+configure terminal
+hostname SW2
+ 
+! 1. Configuración Básica
+enable secret cisco
+! (Resto de config básica: console, vty, ssh...)
+ 
+! 2. Creación de VLANs
+vlan 1
+ name VLAN1_SW2
+vlan 10
+ name VLAN10_SW2
+vlan 20
+ name VLAN20_SW2
+vlan 100
+ name NATIVA_ADMIN_SW2
+vlan 666
+ name AGUJERO_NEGRO_SW2
+ 
+ 
+! 4. Configuración Puertos de Acceso (Adaptar puertos a VLANs de SW2)
+interface range GigabitEthernet1/0/9-10
+ description hosts
+ switchport mode access
+ switchport access vlan 10
+ switchport port-security
+!switchport port-security maximum 3
+!switchport port-security violation shutdown
+ spanning-tree bpduguard enable
+exit
+ 
+interface range GigabitEthernet1/0/19-20
+ description hosts
+ switchport mode access
+ switchport access vlan 20
+ switchport port-security
+!switchport port-security maximum 3
+!switchport port-security violation shutdown
+ spanning-tree bpduguard enable
+exit
+ 
+! 5. Habilitar Enrutamiento L3
+ip routing
+ 
+! 3. Configuración Enlace L3 hacia CORE
+interface GigabitEthernet1/0/2
+ description Enlace L3 hacia CORE
+ no switchport
+ ip address 192.168.255.6 255.255.255.252
+ no shutdown
+ 
+interface GigabitEthernet1/0/3
+ description Enlace L3 hacia CORE
+ no switchport
+ ip address 192.168.255.10 255.255.255.252
+ no shutdown
+ 
+! 5. Creación de SVIs (Gateways locales)
+interface Vlan10
+ description Gateway VLAN10 SW2
+ ip address 172.22.4.1 255.255.255.0
+ no shutdown
+ ! 9. DHCP Relay (Apunta a CORE)
+ ip helper-address 192.168.255.5
+ 
+interface Vlan20
+ description Gateway VLAN20 SW2
+ ip address 172.22.5.1 255.255.255.0
+ no shutdown
+ ! 9. DHCP Relay (Apunta a CORE)
+ ip helper-address 192.168.255.5
+ 
+! 7. Rutas Estáticas en SW1
+ip route 172.22.0.0 255.255.255.0 192.168.255.5
+ip route 172.22.1.0 255.255.255.0 192.168.255.5
+ip route 172.22.2.0 255.255.255.0 192.168.255.5
+ip route 172.22.3.0 255.255.255.0 192.168.255.5
+ip route 192.168.255.0 255.255.255.252 192.168.255.9
+ 
+! Ruta por defecto hacia CORE
+ip route 0.0.0.0 0.0.0.0 192.168.255.5
+ip route 0.0.0.0 0.0.0.0 192.168.255.9 5
+ 
+spanning-tree mode pvst
+spanning-tree portfast default
+spanning-tree vlan 1-400
+ 
+! Puertos no usados
+interface range FastEthernet0/A - B, GigabitEthernet1/0/2
+ switchport mode access
+ switchport access vlan 666
+ shutdown
+ 
+! 10. Seguridad SW2
+! SSH (Configurar igual que en CORE/R1)
+ip domain-name sw2.Dominio.local
+crypto key generate rsa modulus 1024
+username tuAdminSW2 privilege 15 secret tuPassAdminSW2
+line vty 0 15
+ login local
+ transport input ssh
+! DHCP Snooping
+ip dhcp snooping
+ip dhcp snooping vlan 1,10,20,100
+! Confiar en el puerto hacia CORE
+interface GigabitEthernet0/0
+ ip dhcp snooping trust
+! ARP Inspection
+ip arp inspection vlan 1,10,20,100
+! Confiar en el puerto hacia CORE
+interface GigabitEthernet0/0
+ ip arp inspection trust
+ 
+
+
+
+
+
+
+
+
+
+! ############################################################
+! #############       VERIFICACIÓN FINAL         #############
+! ############################################################
+! 1. En PCs: Verificar que obtienen IP, máscara, gateway (debe ser la SVI en SW1/SW2) y DNS vía DHCP.
+! 2. Ping desde PC a su gateway (SVI en SW1/SW2).
+! 3. Ping desde PC en SW1 a PC en SW1 (misma VLAN).
+! 4. Ping desde PC en SW1 a PC en SW1 (diferente VLAN - prueba enrutamiento en SW1).
+! 5. Ping desde PC en SW1 a PC en SW2 (prueba SW1 -> CORE -> SW2).
+! 6. Ping desde PC a CORE (IP SVI 100 o IP en enlace L3).
+! 7. Ping desde PC a R1 (IP en enlace L3 con CORE).
+! 8. Ping desde PC a IP externa (e.g., 209.7.7.7 - prueba NAT y ruta por defecto completa).
+! 9. Comandos show: show ip route, show ip interface brief, show vlan brief, show ip dhcp binding, show ip dhcp snooping binding, show arp, etc. en todos los dispositivos L3.
+! 10. show port-security interface <if>, show spanning-tree summary, etc.
+ 
+! Guardar configuración en todos los dispositivos
+copy running-config startup-config
+! o
+write memory
+! ############################################################
+ 
+
+

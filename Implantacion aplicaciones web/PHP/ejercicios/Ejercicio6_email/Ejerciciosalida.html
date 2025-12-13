@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Correos</title>
+</head>
+<body>
+    <h1>Lista de Correos</h1>
+    <?php
+        $archivo = 'correos.txt';
+        // Leer el contenido del archivo y mostrarlo
+        $contenido = file_get_contents($archivo);
+        echo "<pre>" . $contenido . "</pre>";
+    ?>
+</body>
+</html>

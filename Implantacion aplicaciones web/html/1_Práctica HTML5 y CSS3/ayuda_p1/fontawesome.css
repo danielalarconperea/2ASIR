@@ -1,0 +1,35 @@
+/*********************/
+/* PARA FONT AWESOME */
+/*********************/
+
+@font-face {
+  font-family: "FontAwesome";
+  src: url("fontawesome-webfont.woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.fa-arrow-circle-up:before {
+  content: "\f0aa";
+}
+
+.fa-newspaper-o:before {
+  content: "\f1ea";
+}
+
+.fa-drupal:before {
+  content: "\f1a9";
+}
+
+.fa-wordpress:before {
+  content: "\f19a";
+}

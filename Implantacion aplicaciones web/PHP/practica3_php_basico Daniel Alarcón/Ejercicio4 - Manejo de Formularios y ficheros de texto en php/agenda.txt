@@ -1,0 +1,7 @@
+Juan|pizzero|352345|cartagena 23|nunca
+Daniel|Loquero|2345623|pepito 34|si siempre
+Carlos||||
+Juan|Psicologo|123452345|Pinturillo 6 7|six seven
+Carlos|pizzerooooo|45645|cartagena 23|767y
+Eli|pizzero|3425234534|Pinturillo 6 7|si siempre
+Carlos |Empresario|643245234|madrid centro|si siempre

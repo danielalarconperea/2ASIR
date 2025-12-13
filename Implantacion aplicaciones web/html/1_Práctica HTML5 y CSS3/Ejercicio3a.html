@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 3a</title>
+
+    <style>
+    
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-size: 13px; 
+        }
+
+     
+        .form-container {
+            padding: 20px;
+            width: 800px; 
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: bold;
+            background-color: #e2e2e2;
+        }
+
+    
+        fieldset {
+            margin: 0px;
+            border: 1px solid #999;
+            padding: 15px 20px 20px 20px;
+            background-color: #f0f0f0;
+
+        }
+
+        legend {
+            padding: 0 5px;
+            font-weight: normal;
+            font-size: 14px;
+            background-color: #ffffff;
+            border: 1px solid #e3e3e3;
+            padding: 2px;
+        }
+
+        .container1{
+            display: block;
+        }
+
+        .container2 {
+            display: flex;
+        }
+
+        .item {
+            display: flex;
+            flex-direction: column; 
+            padding: 0px 20px 10px 0px;
+            margin: 0px;
+        }
+
+        .item2 {
+            display: flex;
+            flex-direction: column; 
+            padding: 0px 60px 10px 0px;
+            margin: 0px;
+        }
+
+        .item3 {
+            display: flex;
+            flex-direction: column; 
+            padding: 0px 20px 10px 0px;
+            margin: 0px;
+        }
+
+        .item4 {
+            display: flex;
+            flex-direction: column; 
+            padding: 0px 20px 10px 0px;
+            margin: 0px;
+        }
+
+        .span1 {
+            width: 300px;
+        }
+        .span2 {
+            width: 150px;
+        }
+
+        .span3 {
+            width: 100px;
+        }
+
+        .span4 {
+            width: 250px;
+        }
+        .span5 {
+            width: 80px;
+        }
+        .span6 {
+            width: 100px;
+        }
+
+        .span7 {
+            width: 80px;
+        }
+
+        .span8 {
+            top: 15px;
+            position: relative;
+            width: 370px;
+        }
+
+        .span9 {
+            width: 70px;
+        }
+        .span10 {
+            width: 250px;
+        }
+
+        .span11 {
+            width: 80px;
+        }
+
+        .span12 {
+            width: 100px;
+        }
+
+        .item2 {
+            display: flex;
+            flex-direction: column; 
+        }
+        .item3 {
+            display: flex;
+            flex-direction: column; 
+        }
+        .item4 {
+            display: flex;
+            flex-direction: column; 
+        }
+
+        span {
+            color: #c54842; 
+            text-decoration: underline;
+        }
+
+        input[type="text"],
+        select {
+            border: 1px solid #999;
+            padding: 4px 6px;
+            box-sizing: border-box; 
+            font-size: 13px;
+        }
+
+  
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        button {
+            background: linear-gradient(to top, #bbbbbb, #fefefe);
+            border: 1px solid #888;
+            padding: 5px 12px;
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            border-radius: 3px;
+        }
+    </style>
+
+</head>
+
+
+
+
+<body>
+
+    <div class="form-container">
+        <h2>EJEMPLO DE FORMULARIO</h2>
+        <form action="#" method="post">
+            <fieldset>
+                <legend>Datos personales</legend>
+                <div class="container1">    
+                    <div class="container2">
+                        <div class="item">
+                            <label for="apellidos"><span>A</span>pellidos:</label>
+                            <input class="span1" type="text" id="apellidos" name="apellidos">
+                        </div>
+                        <div class="item">
+                            <label for="nombre">N<span>o</span>mbre:</label>
+                            <input class="span2" type="text" id="nombre" name="nombre">
+                        </div>
+                        <div class="item">
+                            <label for="dni"><span>D</span>NI:</label>
+                            <input class="span3" type="text" id="dni" name="dni">
+                        </div>
+                    </div>
+                    <div class="container2">
+                        <div class="item2">
+                            <label for="nacido"><span>N</span>acido en:</label>
+                            <input class="span4" type="text" id="nacido" name="nacido">
+                        </div>
+                        <div class="item2" style="margin: 0 20px;">
+                            <label for="provincia_nacimiento">Provincia:</label>
+                            <select class="span5" id="provincia_nacimiento" name="provincia_nacimiento">
+                                <option value="valencia" selected>Valencia</option>
+                                <option value="madrid">Madrid</option>
+                                <option value="barcelona">Barcelona</option>
+                                <option value="sevilla">Sevilla</option>
+                            </select>
+                        </div>
+                        <div class="item2">
+                            <label style="white-space: nowrap;" for="fecha_nacimiento"><span>F</span>echa nacimiento (dd/mm/aaaa):</label>
+                            <input class="span6" type="text" id="fecha_nacimiento" name="fecha_nacimiento">
+                        </div>
+                    </div>
+                    <div class="container2">
+                        <div class="item3">
+                            <label for="domicilio">Do<span>m</span>icilio:</label>
+                            <select class="span7" id="domicilio" name="domicilio">
+                                <option value="" selected></option>
+                                <option value=""></option>
+                                <option value=""></option>
+                                <option value=""></option>
+                            </select>
+                        </div>
+                        <div class="item3">
+                            <input class="span8" type="text" id="domicilio" name="domicilio">
+                        </div>
+                        <div class="item3">
+                            <label for="codigo_postal"><span>C</span>ódigo Postal:</label>
+                            <input class="span9" type="text" id="codigo_postal" name="codigo_postal">
+                        </div>
+                    </div>
+                    <div class="container2">
+                        <div class="item4">
+                            <label for="localidad"><span>L</span>ocalidad:</label>
+                            <input class="span10" type="text" id="localidad" name="localidad">
+                        </div>
+                        <div class="item4" style="margin: 0 60px;">
+                            <label for="provincia_domicilio">Provincia:</label>
+                            <select class="span11" id="provincia_domicilio" name="provincia_domicilio">
+                                <option value="valencia" selected>Valencia</option>
+                                <option value="madrid">Madrid</option>
+                                <option value="barcelona">Barcelona</option>
+                                <option value="sevilla">Sevilla</option>
+                            </select>
+                        </div>
+                        <div class="item4">
+                            <label for="telefono"><span>T</span>eléfono:</label>
+                            <input class="span12" type="text" id="telefono" name="telefono">
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="button-container">
+                    <button type="reset">Borrar todo</button>
+                    <button type="submit">Enviar</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 3</title>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #quiz-container {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .question-block {
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+            border-radius: 5px;
+        }
+
+        .question-block p {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 0;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        
+        .options label:hover {
+            background-color: #f1f1f1;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        
+        button {
+            display: block;
+            width: 120px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #fff;
+            background-color: #2c3e50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto 0;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #34495e;
+        }
+
+        #resultado {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="quiz-container">
+        <form id="quizForm">
+            <div class="question-block">
+                <p>1. ¿Cuál de los siguientes elementos no se considera que sea un marcado semántico?</p>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="a"> a. article</label>
+                    <label><input type="radio" name="q1" value="b"> b. section</label>
+                    <label><input type="radio" name="q1" value="c"> c. div</label>
+                    <label><input type="radio" name="q1" value="d"> d. aside</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p>2. Está creando una característica de búsqueda... desea que el cursor del usuario aparezca en el campo Buscar de manera automática. ¿Qué atributo de entrada debe usar?</p>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="a"> a. formmethod</label>
+                    <label><input type="radio" name="q2" value="b"> b. placeholder</label>
+                    <label><input type="radio" name="q2" value="c"> c. form</label>
+                    <label><input type="radio" name="q2" value="d"> d. autofocus</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p>3. Desea agregar un título antes de una tabla de HTML que aparecerá solo una vez. ¿Qué etiqueta usa?</p>
+                <div class="options">
+                    <label><input type="radio" name="q3" value="a"> a. &lt;caption&gt;</label>
+                    <label><input type="radio" name="q3" value="b"> b. &lt;colgroup&gt;</label>
+                    <label><input type="radio" name="q3" value="c"> c. &lt;title&gt;</label>
+                    <label><input type="radio" name="q3" value="d"> d. &lt;thead&gt;</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p>4. ¿Cuál es la forma correcta en CSS para seleccionar un elemento con el id "demo"?</p>
+                <div class="options">
+                    <label><input type="radio" name="q4" value="a"> a. .demo</label>
+                    <label><input type="radio" name="q4" value="b"> b. #demo</label>
+                    <label><input type="radio" name="q4" value="c"> c. demo</label>
+                    <label><input type="radio" name="q4" value="d"> d. *demo</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p>5. ¿Qué etiqueta HTML se utiliza para definir una lista ordenada?</p>
+                <div class="options">
+                    <label><input type="radio" name="q5" value="a"> a. &lt;ul&gt;</label>
+                    <label><input type="radio" name="q5" value="b"> b. &lt;ol&gt;</label>
+                    <label><input type="radio" name="q5" value="c"> c. &lt;li&gt;</label>
+                    <label><input type="radio" name="q5" value="d"> d. &lt;list&gt;</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p>6. En JavaScript, ¿cómo se muestra un cuadro de alerta con el mensaje "Hola Mundo"?</p>
+                <div class="options">
+                    <label><input type="radio" name="q6" value="a"> a. msgBox("Hola Mundo");</label>
+                    <label><input type="radio" name="q6" value="b"> b. console.log("Hola Mundo");</label>
+                    <label><input type="radio" name="q6" value="c"> c. alert("Hola Mundo");</label>
+                    <label><input type="radio" name="q6" value="d"> d. prompt("Hola Mundo");</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p>7. ¿Qué propiedad de CSS se utiliza para cambiar el tamaño de la fuente de un texto?</p>
+                <div class="options">
+                    <label><input type="radio" name="q7" value="a"> a. text-style</label>
+                    <label><input type="radio" name="q7" value="b"> b. font-style</label>
+                    <label><input type="radio" name="q7" value="c"> c. font-size</label>
+                    <label><input type="radio" name="q7" value="d"> d. text-size</label>
+                </div>
+            </div>
+            
+            <div class="question-block">
+                <p>8. ¿Qué significa HTML?</p>
+                <div class="options">
+                    <label><input type="radio" name="q8" value="a"> a. Hyper Text Markup Language</label>
+                    <label><input type="radio" name="q8" value="b"> b. Home Tool Markup Language</label>
+                    <label><input type="radio" name="q8" value="c"> c. Hyperlinks and Text Markup Language</label>
+                    <label><input type="radio" name="q8" value="d"> d. High Tech Modern Language</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p>9. ¿Cómo se inserta un comentario en un archivo CSS?</p>
+                <div class="options">
+                    <label><input type="radio" name="q9" value="a"> a. // esto es un comentario</label>
+                    <label><input type="radio" name="q9" value="b"> b. &lt;!-- esto es un comentario --&gt;</label>
+                    <label><input type="radio" name="q9" value="c"> c. /* esto es un comentario */</label>
+                    <label><input type="radio" name="q9" value="d"> d. ' esto es un comentario</label>
+                </div>
+            </div>
+
+            <div class="question-block">
+                <p>10. ¿Qué etiqueta HTML no necesita una etiqueta de cierre?</p>
+                <div class="options">
+                    <label><input type="radio" name="q10" value="a"> a. &lt;p&gt;</label>
+                    <label><input type="radio" name="q10" value="b"> b. &lt;a&gt;</label>
+                    <label><input type="radio" name="q10" value="c"> c. &lt;div&gt;</label>
+                    <label><input type="radio" name="q10" value="d"> d. &lt;br&gt;</label>
+                </div>
+            </div>
+            
+            <button type="button" id="submitBtn" onclick="Corregir()">Corregir</button>
+        </form>
+        
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        var quizForm = document.getElementById('quizForm')
+
+        var Preguntas = [];
+        for (var i = 1; i <= 10; i++) {
+            Preguntas[i - 1] = quizForm.elements['q' + i];
+        }
+
+        var resultado = document.getElementById('resultado');
+        var NotasContestadas = 0;
+        var notaFinal = 0;
+        
+        var resultados = [2, 3, 0, 1, 1, 2, 2, 0, 2, 3];
+
+        function aciertos() {
+            for (var j=0; j<Preguntas.length; j++) {
+                for (var i=0; i<Preguntas[j].length; i++) {
+                    if(Preguntas[j][i].checked){
+                        if(i==resultados[j]){
+                            notaFinal += 1;   
+                        }              
+                    }
+                }
+            }
+        }
+
+        function Corregir() {
+
+            for (var j=0; j<Preguntas.length; j++) {
+                for (var i=0; i<Preguntas[j].length; i++) {
+                    if (Preguntas[j][i].checked) {
+                        NotasContestadas += 1;
+                    }
+                }
+            }
+            if (NotasContestadas !== 10) {
+                resultado.innerHTML = '';
+                alert('Por favor, responde a todas las preguntas antes de corregir.')
+            }else{
+                aciertos()
+                if (notaFinal >= 5){
+                    resultado.innerHTML = '<p style="color: green">Nota final: '+notaFinal+'/10</p>';
+                }else{
+                    resultado.innerHTML = '<p style="color: red">Nota final: '+notaFinal+'/10</p>';
+                }
+            }
+            NotasContestadas = 0;
+            notaFinal = 0;
+        }
+    </script>
+
+</body>
+</html>

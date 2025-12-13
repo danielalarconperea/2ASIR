@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<title>Problema1</title>
+<meta charset="utf-8">
+<style>
+  #a
+  {
+    border: 1px black solid;
+    width: 350px;
+    height: 210px;
+    margin-left: 150px;
+    margin-right:150px ;
+    background-color: rgb(0, 132, 255);
+  }
+  #b
+  {
+    border: 1px black solid;
+    width: 320px;
+    height: auto;
+    text-align: center;
+    margin: 10px;
+    background-color: rgb(15, 15, 134);
+    color: aliceblue;
+  }
+  #origen
+  {
+
+    width: 150px;
+    height: auto;
+    float: left;
+    margin:10px ;
+  }
+  #destino
+  {
+   
+    width: 150px;
+    height: auto;
+    float: left;
+    margin: 10px;
+  }
+  #c
+  {
+
+    width: auto;
+    height: auto;
+    text-align: center;
+    margin: 10px; 
+  }
+  #d
+  {
+
+    width: auto;
+    height: auto;
+    text-align: center;
+    margin: 10px; 
+    
+  }
+</style>
+</head>
+<body>
+    
+    <form name="fc">
+    <div id="a">
+        <div id="b">
+            Vuelos Monroy
+        </div>
+        <div id="origen">
+            Origen<br>
+            <input type="radio" name="origen" value="madrid"> Madrid<br>
+            <input type="radio" name="origen" value="malaga">Málaga<br>
+            <input type="radio" name="origen" value="valencia">Valencia<br>
+        </div>
+        <div id="destino">
+            Destino<br>
+            <input type="radio" name="destino" value="frankfurt">Frankfurt<br>
+            <input type="radio" name="destino" value="milan">Milán<br>
+            <input type="radio" name="destino" value="londres">Londres<br>
+        </div>
+        <div id="c">
+            Nº de personas : 
+            <select name="num">
+                <option value="2">2</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+            </select>
+            <input type="button" value="Calcular" onclick="calcular()">
+        </div>
+        <div id="d">
+            total : <input type="text" id="total" placeholder="0">
+        </div>
+    </div>
+    </form>
+    <script>
+      var form = document.getElementById('a');
+      var origenes = document.getElementsByName('origen');
+      var destinos = document.getElementsByName('destino');
+      var total = document.getElementById('total');
+      var coste = 0;
+      var num = document.getElementsByName('num');
+      var c = document.getElementById('c')
+
+
+      // var num1 = form.num.selects.options['num']
+      // var num1 = form.num.selected.options['num']
+      // var num1 = form.elements['num']
+      // var num1 = form.num.selectedindex[option] 
+      // var num1 = form.num.selected[options] 
+      // var num1 = c.selects[option] 
+      // var num1 = c.selectedindex[option]      
+      // var num1 = form.num.elements.index[option];
+      // var num1 = form.num.selected[options];
+      // var num1 = form.num.selectedindex[options];
+      //    var fnum1 = getElementsByName('num1');
+      // num1 = queryselector('num1')
+
+      function calcular(){
+        var comprobar = 0;
+        var origenSeleccionado = '';
+        var destinoSeleccionado = '';
+        for (var i=0;i<origenes.length;i++){
+          if (origenes[i].checked){
+            comprobar+=1;
+            origenSeleccionado = origenes[i].value;
+          }
+          if (destinos[i].checked){
+            comprobar+=1;
+            destinoSeleccionado = destinos[i].value;
+          }
+        }
+        if (comprobar != 2){
+          alert('Es obligatorio seleccionar el origen y destino del vuelo');
+        }else{
+          if(
+            (origenSeleccionado == 'madrid' && destinoSeleccionado == 'londres') || 
+            (origenSeleccionado == 'malaga' && destinoSeleccionado == 'londres') || 
+            (origenSeleccionado == 'valencia' && destinoSeleccionado == 'frankfurt')
+          ){
+            coste = 60;
+          }else{coste = 90;}
+          for(var i=0;i<num.length;i++){
+            alert('234243');
+          }
+        }
+      }
+    </script>
+</body>
+</html>

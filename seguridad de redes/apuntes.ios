@@ -1,0 +1,74 @@
+
+access-list 1 permit 192.168.0.7 0.0.0.0
+access-list 1 deny any
+
+line vty 0 2
+password cisco
+login
+access-class 1 in 
+! El trafico entra en la lista 1
+
+
+! Scripts de Configuraciones
+! Router R2
+enable
+configure terminal
+interface GigabitEthernet0/0
+ ip access-group 1 out
+access-list 1 deny 192.168.11.0 0.0.0.255
+access-list 1 permit any
+end
+! Router R3
+enable
+configure terminal
+interface GigabitEthernet0/0
+ ip access-group 1 out
+access-list 1 deny 192.168.10.0 0.0.0.255
+access-list 1 permit any
+end
+
+
+
+! Scripts de respuestas
+! Router R1
+enable
+configure terminal
+ip access-list standard BRANCH-OFFICE-POLICY
+ permit host 192.168.30.3
+ permit 192.168.40.0 0.0.0.255
+interface g0/0/0
+ ip access-group BRANCH-OFFICE-POLICY out
+ip access-list standard BRANCH-OFFICE-POLICY
+ 30 permit 209.165.200.224 0.0.0.31
+ 40 deny any
+end
+! Router R3
+enable
+configure terminal
+access-list 1 remark Allow R1 LANs Access
+access-list 1 permit 192.168.10.0 0.0.0.255
+access-list 1 permit 192.168.20.0 0.0.0.255
+access-list 1 deny any
+interface g0/0/0
+ ip access-group 1 out
+end
+
+
+
+!------------------------------------ 10/10/25
+
+interface FastEthernet0/0
+ ip nat inside
+interface Serial0/0/0
+ ip nat inside
+interface Serial0/0/1
+ ip nat inside
+interface Serial0/1/0
+ ip nat outside
+ip nat pool R2POOL 209.165.202.129 209.165.202.129 netmask 255.255.255.252
+ip nat inside source list R2NAT pool R2POOL overload
+ip nat inside source static 192.168.20.254 209.165.202.130
+ip access-list standard R2NAT
+ permit 192.168.10.0 0.0.0.255
+ permit 192.168.20.0 0.0.0.255
+ permit 192.168.30.0 0.0.0.255

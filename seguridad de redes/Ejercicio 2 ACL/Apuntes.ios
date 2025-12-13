@@ -1,0 +1,125 @@
+! CORE
+configure terminal
+
+! 1. Habilitar el enrutamiento IP
+ip routing
+
+! 2. Crear las VLANs para las redes
+vlan 10
+ name PRIMAVERA
+vlan 20
+ name VERANO
+exit
+
+! 3. Configurar la Interfaz (SVI) para Red PRIMAVERA
+interface Vlan10
+ description Gateway Red PRIMAVERA
+ ip address 192.168.1.1 255.255.255.0
+! Esta interfaz será "inside" para NAT
+ ip nat inside
+! Aplicar la ACL de gestión de tráfico
+ ip access-group PRIMAVERA_IN in
+ 
+! 4. Configurar la Interfaz (SVI) para Red VERANO
+interface Vlan20
+ description Gateway Red VERANO
+ ip address 192.168.0.1 255.255.255.0
+! Esta interfaz será "inside" para NAT
+ ip nat inside
+! Aplicar la ACL de gestión de tráfico
+ ip access-group VERANO_IN in
+
+! 5. Configurar los puertos troncales hacia los switches SW1 y SW2
+interface GigabitEthernet1/0/1
+ description Enlace a SW1
+ switchport mode trunk
+!
+interface GigabitEthernet1/0/2
+ description Enlace a SW2
+ switchport mode trunk
+
+! 6. Configurar el puerto hacia Internet (convertir en puerto enrutado)
+interface GigabitEthernet1/0/24
+ description Enlace a INTERNET
+ no switchport
+ ip address 209.7.7.1 255.255.255.0
+! Esta interfaz será "outside" para NAT
+ ip nat outside
+! Aplicar la ACL de gestión de tráfico
+ ip access-group INTERNET_IN in
+
+! 7. Configurar la ruta estática por defecto hacia Internet
+! Enviamos todo el tráfico desconocido (0.0.0.0) por la interfaz que sale a Internet
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet1/0/24
+
+
+
+
+! 1. Crear una Access List (ACL) estándar que defina qué IPs internas se van a traducir
+! Permitimos ambas redes: PRIMAVERA (1.0) y VERANO (0.0)
+ip access-list standard NAT_ACL
+ permit 192.168.1.0 0.0.0.255
+ permit 192.168.0.0 0.0.0.255
+exit
+
+! 2. Activar la regla de NAT
+! Traduce cualquier IP de la lista NAT_ACL a la IP de la interfaz Gig1/0/24
+ip nat inside source list NAT_ACL interface GigabitEthernet1/0/24 overload
+
+! 3. (Ya hecho en el paso 1) Asegurarse de que las interfaces Vlan10, Vlan20 son "ip nat inside"
+!    y la interfaz Gig1/0/24 es "ip nat outside".
+
+
+
+
+
+
+
+! ### A. DESDE INTERNET (Entrando por Gig1/0/24) ###
+! "Prohibido todo el tráfico con destino a las redes internas, excepto el de retorno."
+! La NAT ya previene tráfico no solicitado. Esta ACL es un refuerzo que bloquea
+! explícitamente el acceso a las IPs internas (que no deberían ser visibles)
+! y permite el resto (incluido el tráfico de retorno NAT).
+
+ip access-list extended INTERNET_IN
+ ! 1. Deniega explícitamente cualquier paquete que intente llegar a las redes internas
+ deny   ip any 192.168.1.0 0.0.0.255
+ deny   ip any 192.168.0.0 0.0.0.255
+ ! 2. Permite todo lo demás (esto es VITAL para que funcione el tráfico de retorno de NAT)
+ permit ip any any
+exit
+
+
+! ### B. DESDE Red PRIMAVERA (Entrando por Vlan10) ###
+ip access-list extended PRIMAVERA_IN
+ ! 1. "Permitido el tráfico a los equipos del 128 al 254 de la red VERANO". (Esto permitirá que PC0 pueda ver a PC3)
+ permit ip 192.168.1.0 0.0.0.255 192.168.0.128 0.0.0.127
+ 
+ ! 2. Denegar el resto del tráfico a la red VERANO para cumplir la regla 3. (Esto denegará que PC0 vea a PC2)
+ deny   ip 192.168.1.0 0.0.0.255 192.168.0.0 0.0.0.255
+ 
+ ! 3. "Permitido sólo el tráfico WEB, TFTP, FTP e ICMP a internet"
+ permit tcp 192.168.1.0 0.0.0.255 any eq 80  ! HTTP (WEB)
+ permit tcp 192.168.1.0 0.0.0.255 any eq 443 ! HTTPS (WEB)
+ permit udp 192.168.1.0 0.0.0.255 any eq 69  ! TFTP
+ permit tcp 192.168.1.0 0.0.0.255 any eq 20  ! FTP-data
+ permit tcp 192.168.1.0 0.0.0.255 any eq 21  ! FTP-control
+ permit icmp 192.168.1.0 0.0.0.255 any       ! ICMP (Ping)
+ 
+ ! 4. "Resto de tráfico denegado" (esto lo hace el 'deny ip any any' implícito al final)
+exit
+
+
+! ### C. DESDE Red VERANO (Entrando por Vlan20) ###
+ip access-list extended VERANO_IN
+ ! 1. "Denegado el tráfico hacia los equipos 16 al 33 de la red primavera" (Esto denegará que PC2/PC3 vean a PC1)
+ ! Rango 192.168.1.16 a 192.168.1.31
+ deny   ip 192.168.0.0 0.0.0.255 192.168.1.16 0.0.0.15
+ ! Rango 192.168.1.32 a 192.168.1.33
+ deny   ip 192.168.0.0 0.0.0.255 192.168.1.32 0.0.0.1
+ 
+ ! 2. "Permitido todo el tráfico a internet" (y al resto de la red primavera)
+ permit ip 192.168.0.0 0.0.0.255 any
+ 
+ ! 3. (Deny implícito al final)
+exit

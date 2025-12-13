@@ -1,0 +1,320 @@
+#################################################################################
+### 1\. 🌐 Configuraciones Globales (Aplicar en Alpedrete, Titulcia, SW2 e ISP) #
+################################################################################
+
+! Entrar en modo de configuración global
+configure terminal
+
+! Habilita LLDP en todo el dispositivo
+lldp run
+
+! Habilita marcas de tiempo para los logs (ayuda a depurar)
+service timestamps log datetime msec
+
+! Apunta todos los mensajes de log al servidor Syslog
+! (Asumiendo que el servidor Syslog/NTP es 172.20.25.10)
+logging host 172.20.25.10
+
+! Configura el servidor NTP
+ntp server 172.20.25.10
+
+! --- Inicio de Configuración de Seguridad SSH ---
+! Se necesita un nombre de host y dominio para generar claves SSH
+! (El nombre de host se configura en cada dispositivo)
+ip domain-name miempresa.local
+
+! Genera las claves para habilitar SSH
+crypto key generate rsa modulus 1024
+
+! Crea un usuario local para el acceso SSH
+username admin privilege 15 secret 0 Cisco123
+
+! Define la ACL que SÓLO permite al PC de Admin (172.20.25.11)
+! (Asignaré la IP .11 al PC-Adm. Cambia esto si usas otra IP)
+ip access-list standard SSH_ACL
+ remark Permite SÓLO al host de Administración
+ permit host 172.20.25.11
+ remark Deniega todo lo demás
+ deny   any log
+
+! Aplica la seguridad a las líneas VTY (acceso remoto)
+line vty 0 4
+ ! Aplica la ACL de SSH
+ access-group SSH_ACL in
+ ! Fuerza el uso de SSH (deshabilita Telnet)
+ transport input ssh
+ ! Usa la base de datos local para la autenticación
+ login local
+exit
+! --- Fin de Configuración de Seguridad SSH ---
+
+
+###############################################
+### 2\. 🛡️ Switch SW2 (Switch Capa 3 - Core) #
+##############################################
+
+Este es el dispositivo más importante, ya que conecta casi todas las redes.
+
+
+! Entrar en modo de configuración
+enable
+configure terminal
+
+! Importante: Habilitar el enrutamiento de Capa 3
+ip routing
+
+! Asigna un nombre de host (necesario para SSH)
+hostname SW2
+
+! (Aplica aquí las configuraciones globales de la sección 1)
+! ...
+
+! --- Creación de VLANs ---
+vlan 10
+ name FUNDICION
+vlan 20
+ name DISEÑO
+vlan 30
+ name CARPINTERIA_METALICA
+vlan 40
+ name ADMIN
+
+! --- Configuración de Interfaces Virtuales (SVI) - Gateways ---
+interface Vlan10
+ description Gateway para FUNDICION
+ ! El .1 será el gateway para la red 172.20.2.0/24
+ ip address 172.20.2.1 255.255.255.0
+exit
+
+interface Vlan20
+ description Gateway para DISEÑO
+ ip address 172.20.3.1 255.255.255.0
+exit
+
+interface Vlan30
+ description Gateway para CARPINTERIA_METALICA
+ ip address 172.20.1.1 255.255.255.0
+ ! Aplica la ACL de Carpintería en la entrada
+ ip access-group CARPINTERIA_IN in
+exit
+
+interface Vlan40
+ description Gateway para ADMIN
+ ip address 172.20.25.1 255.255.255.0
+exit
+
+! --- Configuración de ACL para CARPINTERÍA ---
+ip access-list extended CARPINTERIA_IN
+ remark Denegado FTP/TFTP a FORJA (hosts .1 a .63)
+ deny   tcp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 20
+ deny   tcp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 21
+ deny   udp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 69
+ remark Denegado ICMP a DISEÑO
+ deny   icmp 172.20.1.0 0.0.0.255 172.20.3.0 0.0.0.255
+ remark Se permite todo el resto del tráfico
+ permit ip 172.20.1.0 0.0.0.255 any
+exit
+
+! --- Configuración de Puertos de Capa 3 (Enlaces a Routers) ---
+! (Uso los puertos del diagrama 1, el más detallado)
+interface GigabitEthernet1/0/22
+ description Enlace a Router Alpedrete
+ no switchport
+ ! IP .2 de la red 172.20.255.0/30
+ ip address 172.20.255.2 255.255.255.252
+exit
+
+interface GigabitEthernet1/0/21
+ description Enlace a Router Titulcia
+ no switchport
+ ! IP .6 de la red 172.20.255.4/30
+ ip address 172.20.255.6 255.255.255.252
+exit
+
+interface GigabitEthernet1/0/23
+ description Enlace a Router ISP
+ no switchport
+ ! IP .9 de la red 172.20.255.8/30
+ ip address 172.20.255.9 255.255.255.252
+exit
+
+! --- Configuración OSPF (Área Única 0) ---
+router ospf 1
+ ! Anuncia todas las redes conectadas a SW2
+ network 172.20.1.0 0.0.0.255 area 0
+ network 172.20.2.0 0.0.0.255 area 0
+ network 172.20.3.0 0.0.0.255 area 0
+ network 172.20.25.0 0.0.0.255 area 0
+ network 172.20.255.0 0.0.0.3 area 0
+ network 172.20.255.4 0.0.0.3 area 0
+ network 172.20.255.8 0.0.0.3 area 0
+exit
+
+
+##############################
+### 3\. 🔩 Router Alpedrete #
+#############################
+
+Este router es el gateway para FORJA-Artesana.
+
+
+enable
+configure terminal
+
+! Asigna un nombre de host (necesario para SSH)
+hostname Alpedrete
+
+! (Aplica aquí las configuraciones globales de la sección 1)
+! ...
+
+! --- Configuración de Interfaces ---
+interface GigabitEthernet0/0/0
+ ! (Asumiendo que es Gig0/0/0, el diagrama solo dice Gig0/0)
+ description Gateway para FORJA-Artesana
+ ! El .1 será el gateway para la red 172.20.0.0/24
+ ip address 172.20.0.1 255.255.255.0
+ ! Aplica la ACL de FORJA en la entrada
+ ip access-group FORJA_IN in
+exit
+
+interface GigabitEthernet0/0/1
+ ! (Asumiendo Gig0/0/1, el diagrama dice Gig0/1)
+ description Enlace a SW2
+ ! IP .1 de la red 172.20.255.0/30
+ ip address 172.20.255.1 255.255.255.252
+exit
+
+interface Serial0/1/0
+ description Enlace WAN a Titulcia
+ ! IP .1 de la red 192.168.255.0/30
+ ip address 192.168.255.1 255.255.255.252
+ clock rate 128000 ! (Ajusta si es el extremo DCE)
+exit
+
+! --- Configuración de ACL para FORJA ---
+ip access-list extended FORJA_IN
+ remark Prohibido tráfico a FUNDICION (VLAN 10)
+ deny   ip 172.20.0.0 0.0.0.255 172.20.2.0 0.0.0.255
+ remark Prohibido tráfico a DISEÑO (VLAN 20)
+ deny   ip 172.20.0.0 0.0.0.255 172.20.3.0 0.0.0.255
+ remark Permitido ICMP a cualquier red
+ permit icmp 172.20.0.0 0.0.0.255 any
+ remark Se permite todo el resto del tráfico
+ permit ip 172.20.0.0 0.0.0.255 any
+exit
+
+! --- Configuración OSPF (Área Única 0) ---
+router ospf 1
+ ! Anuncia todas las redes conectadas a Alpedrete
+ network 172.20.0.0 0.0.0.255 area 0
+ network 172.20.255.0 0.0.0.3 area 0
+ network 192.168.255.0 0.0.0.3 area 0
+exit
+
+
+#############################
+### 4\. 🔩 Router Titulcia #
+############################
+
+Este router sirve como enlace redundante/secundario.
+
+
+enable
+configure terminal
+
+! Asigna un nombre de host (necesario para SSH)
+hostname Titulcia
+
+! (Aplica aquí las configuraciones globales de la sección 1)
+! ...
+
+! --- Configuración de Interfaces ---
+interface Serial0/1/0
+ description Enlace WAN a Alpedrete
+ ! IP .2 de la red 192.168.255.0/30
+ ip address 192.168.255.2 255.255.255.252
+exit
+
+interface GigabitEthernet0/0/0
+ description Enlace a SW2
+ ! IP .5 de la red 172.20.255.4/30
+ ip address 172.20.255.5 255.255.255.252
+exit
+
+! --- Configuración OSPF (Área Única 0) ---
+router ospf 1
+ ! Anuncia todas las redes conectadas a Titulcia
+ network 172.20.255.4 0.0.0.3 area 0
+ network 192.168.255.0 0.0.0.3 area 0
+exit
+
+
+-----
+########################
+### 5\. ☁️ Router ISP #
+#######################
+
+Este router conecta la empresa a Internet y gestionará NAT/PAT.
+
+
+enable
+configure terminal
+
+! Asigna un nombre de host (necesario para SSH)
+hostname ISP
+
+! (Aplica aquí las configuraciones globales de la sección 1)
+! ...
+
+! --- Configuración de Interfaces ---
+interface GigabitEthernet0/0/1
+ description Enlace INTERNO a SW2
+ ! IP .10 de la red 172.20.255.8/30
+ ip address 172.20.255.10 255.255.255.252
+ ! Define esta interfaz como la "interna" para NAT
+ ip nat inside
+exit
+
+interface GigabitEthernet0/0/0
+ description Enlace EXTERNO a Internet
+ ! Usamos una IP pública, ej: 209.165.200.225 (del diagrama)
+ ip address 209.165.200.225 255.255.255.224 ! (O la que corresponda)
+ ! Define esta interfaz como la "externa" para NAT
+ ip nat outside
+ ! Aplica la ACL para tráfico entrante de Internet
+ ip access-group INTERNET_IN in
+exit
+
+! --- Configuración de NAT/PAT ---
+! 1. Define qué tráfico interno puede salir (todas las redes 172.20.x.x)
+ip access-list standard NAT_ACL
+ permit 172.20.0.0 0.0.255.255
+! 2. Configura NAT (PAT) para sobrecargar todo en la IP de Gig0/0/0
+ip nat inside source list NAT_ACL interface GigabitEthernet0/0/0 overload
+
+! --- ACL para "DESDE INTERNET" ---
+! "Permitido sólo el tráfico de retorno"
+ip access-list extended INTERNET_IN
+ remark Permite el tráfico de retorno (NAT, ICMP, etc.)
+ permit tcp any any established
+ permit udp any any
+ permit icmp any any echo-reply
+ permit icmp any any time-exceeded
+ permit icmp any any unreachable
+ remark Deniega explícitamente todo lo demás (tráfico no solicitado)
+ deny   ip any any log
+exit
+
+! --- Ruta por Defecto y Propagación OSPF ---
+! 1. Ruta estática hacia Internet (simulada)
+! (Apunta al "siguiente salto" de tu proveedor de Internet)
+ip route 0.0.0.0 0.0.0.0 209.165.200.226
+
+! 2. Configura OSPF
+router ospf 1
+ ! Anuncia la red interna conectada (hacia SW2)
+ network 172.20.255.8 0.0.0.3 area 0
+ ! Inyecta la ruta por defecto en OSPF para que las redes internas
+ ! sepan cómo salir a Internet a través del router ISP.
+ default-information originate
+exit

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 4</title>
+    <style>
+
+        body {
+            background-color: #fdaa56; 
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 1em;
+            color: #333;
+            text-align: justify;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2em;
+            color: #ff5900;
+            background-color: #ffffff;
+            border-bottom: 4px solid #ff5900;
+            border-top: 4px solid #ff5900;
+            padding: 0 6px 0 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.8em;
+            font-weight: bold;
+        }
+
+        header .meta-info {
+            text-align: right;
+            font-size: 1em;
+            white-space: nowrap;
+            margin-top: 5px;
+            color: black;
+        }
+
+        header .meta-info p {
+            margin: 0;
+        }
+
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 2em; 
+        }
+
+       
+        .card {
+            background-color: white;
+        }
+        .card-body{
+            padding: 5px;
+        }
+        p{
+            margin: 0;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.6em;
+            color: rgb(255, 255, 255);
+            background-color: #ff5900;
+            font-weight: bold;
+            padding: 5px;
+            margin: 0;
+        }
+
+        .card p {
+            font-size: 1em;
+            line-height: 1.4em;
+        }
+
+        .card a {
+            color: #d000ff;
+            text-decoration: underline;
+        }
+        
+        .img1{
+            width: 350px;
+            border-bottom: 4px solid #ff5900;
+            border-top: 4px solid #ff5900;
+        }
+
+        .img2{
+            width: 350px;
+            border-bottom: 4px solid #ff5900;
+            border-top: 4px solid #ff5900;
+        }
+
+        .img3{
+            width: 350px;
+            border-bottom: 4px solid #ff5900;
+            border-top: 4px solid #ff5900;
+        }
+
+        .img-container2{
+            float: left;
+        }
+
+        .img-container3{
+            text-align: center;
+        }
+
+        .letras{
+            color: #ff008c;
+            font-size: x-large;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Escritorio vs móviles</h1>
+            <div class="meta-info">
+                <p>Autor: Barto</p>
+                <p>Fecha: 28/06/16</p>
+            </div>
+        </header>
+
+        <div class="content-grid">
+            <div class="card">
+                    <h2>Los móviles, el nuevo ordenador</h2>
+                <div class="card-body" style="display: flex;">
+                    <div>
+                        <p>La segunda década del siglo XXI está siendo la década de la <b>informática móvil</b> y el protagonista principal está siendo el smartphone, el teléfono móvil inteligente.</p>
+                        <p>Las ventas anuales mundiales de los últimos años y las previsiones para los próximos años publicados por la consultora <b>Gartner</b> explican claramente porque los móviles son cada vez más importantes frente a los PCs:</p>
+                    </div>
+                    <div class="img-container1"><img class="img1" src="./ayuda_p1/gartner.png" alt=""></div>
+                </div>
+            </div>
+
+            <div class="card">      
+                    <h2>El acceso a la web</h2>
+                <div class="card-body">
+                    <p>El cambio de una informática de escritorio a una informática móvil se refleja en las estadísticas de visitas a los sitios web. Según la empresa <b>NetMarketShare</b>, casi <span class="letras">uno de cada tres usuarios</span> accederían ya a la web desde un dispositivo móvil.</p>
+                    <div class="img-container2"><img class="img2" src="./ayuda_p1/netapplications.png" alt=""></div>
+                    <p>Dada la dificultad de recopilar este tipo de información, lo importante en este gráfico es la tendencia, más que los valores en sí.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                    <h2>Los datos de Wikipedia</h2>
+                <div class="card-body">
+                    <p>Desde mayo de 2015, <b>Wikimedia</b> publica en <a href="https://analytics.wikimedia.org/">https://analytics.wikimedia.org/</a> estadísticas muy detalladas de sus logs de acceso. En el caso de las webs de Wikimedia, durante el último año <span class="letras">la mitad de las visitas</span> se producen desde ordenadores de escritorio y la otra mitad desde dispositivos móviles, aunque por tratarse de un período muy corto (un año), es difícil detectar tendencias en este gráfico.</p>
+                    <div class="img-container3"><img class="img3" src="./ayuda_p1/wikimedia.png" alt=""></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

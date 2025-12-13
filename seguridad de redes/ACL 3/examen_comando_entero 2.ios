@@ -1,0 +1,418 @@
+! =========================================================
+! 0) RESUMEN DE LO QUE SE CONFIGURA (SEGÚN LA DERECHA)
+!    - VLAN 10 y 20 en Titulcia
+!    - Direccionamiento de toda la red
+!    - OSPF área única
+!    - LLDP + NTP + SYSLOG + timestamps
+!    - ACL FORJA, CARPINTERÍA, TODAS LAS REDES, DESDE INTERNET
+!    - SSH sólo desde equipo Adm
+! =========================================================
+
+
+! =========================================================
+! 1) EN TITULCIA HAY DOS VLAN, 10 Y 20
+! =========================================================
+! SW3: VLAN 10 FUNCIÓN, VLAN 20 DISEÑO, y trunk hacia TITULCIA
+
+conf t
+hostname SW3
+vlan 10
+ name FUNCION
+vlan 20
+ name DISENIO
+
+interface f0/1
+ switchport mode access
+ switchport access vlan 10      
+
+interface f0/2
+ switchport mode access
+ switchport access vlan 10      
+
+interface f0/3
+ switchport mode access
+ switchport access vlan 10      
+
+interface f0/4
+ switchport mode access
+ switchport access vlan 20     
+
+
+
+
+! Router TITULCIA: subinterfaces para las VLAN
+conf t
+hostname TITULCIA
+
+interface g0/0/0
+ no shut                         
+
+interface g0/0/0.10
+ encapsulation dot1q 10
+ ip address 172.20.2.1 255.255.255.0   ! VLAN 10 FUNCIÓN
+
+interface g0/0/0.20
+ encapsulation dot1q 20
+ ip address 172.20.3.1 255.255.255.0   ! VLAN 20 DISEÑO
+end
+
+
+
+! =========================================================
+! 2) CONFIGURA DIRECCIONAMIENTO EN LA RED
+! =========================================================
+
+! ---------------- ALPEDRETE ----------------
+en
+conf t
+hostname ALPEDRETE
+
+interface g0/0/0 
+ description LAN FORJA_ARTESANA
+ ip address 172.20.0.1 255.255.255.0 
+ no sh
+
+interface g0/0/1
+ description Enlace a SW2
+ ip address 172.20.255.1 255.255.255.252
+ no sh
+
+
+! ---------------- SW2 (L3) ----------------
+en 
+conf t
+hostname SW2
+
+interface g1/0/24
+ description Hacia ALPEDRETE
+ no sw 
+ ip address 172.20.255.2 255.255.255.252
+
+interface g1/1/1 
+ description Hacia TITULCIA
+ no sw
+ ip address 172.20.255.6 255.255.255.252
+
+interface g1/0/23 
+ description Hacia CARPINTERIA (SW4)
+ no sw 
+ ip address 172.20.1.1 255.255.255.0
+
+interface g1/0/21
+ description Hacia red ADM + SYSLOG/NTP
+ no sw
+ ip address 172.20.254.1 255.255.255.0
+
+interface g1/0/22
+ description Hacia ISP
+ no sw
+ ip address 172.20.255.10 255.255.255.252
+exit
+end
+
+
+! ---------------- TITULCIA (enlaces) ----------------
+en 
+conf t
+
+
+interface g0/0/2
+ description Enlace a SW2
+ ip address 172.20.255.5 255.255.255.252
+ ip ospf network point-to-point
+ no sh
+end
+
+
+! ---------------- ISP ----------------
+en
+conf t
+hostname ISP
+
+interface g0/0/0
+ description Enlace a SW2
+ ip address 172.20.255.9 255.255.255.252
+ no sh
+
+interface g0/0/1
+ description Hacia INTERNET
+ ip address 209.8.8.1 255.255.255.0
+ no sh
+end
+
+! =========================================================
+! 3) CONFIGURA OSPF DE ÁREA ÚNICA
+! =========================================================
+
+! -------- SW2 --------
+conf t
+ip routing
+router ospf 10
+ net 172.20.255.0 0.0.0.3 area 0     ! Enlace ALPEDRETE
+ net 172.20.255.4 0.0.0.3 area 0     ! Enlace TITULCIA
+ net 172.20.254.0 0.0.0.255 area 0   ! ADM / SYSLOG / NTP
+ net 172.20.1.0 0.0.0.255 area 0     ! CARPINTERIA
+ net 172.20.255.8 0.0.0.3 area 0     ! Enlace ISP
+exit
+end
+
+! clear ospf process   (lo puedes usar manualmente si cambias algo gordo)
+
+
+! -------- ALPEDRETE --------
+conf t
+router ospf 10
+ net 172.20.0.0 0.0.0.255 area 0
+ net 172.20.255.0 0.0.0.3 area 0
+ net 192.168.255.0 0.0.0.3 area 0
+exit
+***************************************************************************line console 0  
+ logging synchronous
+end
+! show ip route   (para ver info)
+
+! -------- TITULCIA --------
+conf t
+router ospf 10
+ net 192.168.255.0 0.0.0.3 area 0
+ net 172.20.2.0 0.0.0.255 area 0
+ net 172.20.3.0 0.0.0.255 area 0
+ net 172.20.255.4 0.0.0.3 area 0
+exit
+end
+! show running-config
+! clear ip ospf process
+
+! -------- ISP --------
+conf t
+router ospf 10
+ net 172.20.255.8 0.0.0.3 area 0
+ default-information originate
+exit
+
+ip route 0.0.0.0 0.0.0.0 g0/0/0     ! ruta por defecto hacia Internet
+end
+
+
+! =========================================================
+! 4) HABILITA LLDP Y NTP EN CADA ROUTER Y SW2
+! =========================================================
+
+! En ALPEDRETE
+conf t
+lldp run
+ntp server 172.20.254.10
+end
+
+! En SW2
+conf t
+lldp run
+ntp server 172.20.254.10
+end
+
+! En TITULCIA
+conf t
+lldp run
+ntp server 172.20.254.10
+end
+
+! En ISP
+conf t
+lldp run
+ntp server 172.20.254.10
+end
+
+
+! =========================================================
+! 5) SYSLOG + MARCAS DE TIEMPO EN ROUTERS Y SW2
+! =========================================================
+
+! En ALPEDRETE
+conf t
+service timestamps log datetime msec
+logging host 172.20.254.10
+logging trap informational
+end
+
+! En SW2
+conf t
+service timestamps log datetime msec
+logging host 172.20.254.10
+logging trap informational
+end
+
+! En TITULCIA
+conf t
+service timestamps log datetime msec
+logging host 172.20.254.10
+logging trap informational
+end
+
+! En ISP
+conf t
+service timestamps log datetime msec
+logging host 172.20.254.10
+logging trap informational
+end
+! show clock
+! show ntp associations
+
+
+! =========================================================
+! 6) FORJA ARTESANA – ACL (EN ALPEDRETE)
+!    Prohibido tráfico a FUNCIÓN y DISEÑO, sólo ICMP permitido
+! =========================================================
+
+conf t
+access-list 100 permit icmp 172.20.0.0 0.0.0.255 any 
+access-list 100 deny ip 172.20.0.0 0.0.0.255 172.20.2.0 0.0.0.255 
+access-list 100 deny ip 172.20.0.0 0.0.0.255 172.20.3.0 0.0.0.255 
+access-list 100 permit ip any any
+interface g0/0/0 
+ ip access-group 100 in
+end
+! show access-list
+
+
+! =========================================================
+! 7) CARPINTERÍA METÁLICA – ACL (EN SW2)
+!    Denegar FTP/TFTP a hosts 1–63 de FORJA y ICMP a DISEÑO
+! =========================================================
+
+conf t
+access-list 100 deny icmp 172.20.1.0 0.0.0.255 172.20.3.0 0.0.0.255
+access-list 100 deny tcp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 20
+access-list 100 deny tcp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 21
+access-list 100 deny udp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 69
+access-list 100 permit ip any any
+interface g1/0/23 
+ ip access-group 100 in
+end
+
+
+! =========================================================
+! 8) TODAS LAS REDES – ACL A INTERNET (EN SW2)
+!    WEB, FTP, DNS, ICMP permitidos. Resto denegado.
+! =========================================================
+
+conf t
+ip access-list extended AInternet
+ permit icmp 172.20.0.0 0.0.255.255 any 
+ permit tcp any any eq 80 
+ permit tcp any any eq 443
+ permit tcp any any eq 20
+ permit tcp any any eq 21
+ permit tcp any any eq 53
+ permit udp any any eq 53
+ deny ip any any
+exit
+
+interface g1/0/22 
+ ip access-group AInternet out
+end
+
+
+! =========================================================
+! 9) DESDE INTERNET – ACL EN ISP
+!    Sólo tráfico de retorno
+! =========================================================
+
+conf t
+ip access-list extended DeInternet
+ permit tcp any any established              ! conexiones ya establecidas
+ permit icmp any any echo-reply
+ permit icmp any any time-exceeded
+ permit icmp any any unreachable
+ permit udp any eq 53 172.20.0.0 0.0.255.255 ! respuestas DNS
+ deny ip any any
+exit
+
+interface g0/0/0
+ ip access-group DeInternet in
+end
+
+
+! =========================================================
+! 10) PROTEGER ROUTERS Y SW2 – SÓLO ADM PUEDE HACER SSH
+!     (misma idea en ALPEDRETE, SW2, TITULCIA, ISP)
+!     Supongo PC Adm: 172.20.254.11
+! =========================================================
+
+! En ALPEDRETE
+conf t
+ip domain-name empresa.local
+username admin secret cisco123
+crypto key generate rsa modulus 1024
+ip ssh version 2
+ip access-list standard ACL_SSH
+ permit 172.20.254.11
+ deny any
+exit
+line vty 0 4
+ transport input ssh
+ login local
+ access-class ACL_SSH in
+exit
+end
+
+! En SW2
+conf t
+ip domain-name empresa.local
+username admin secret cisco123
+crypto key generate rsa  1024
+ip ssh version 2
+ip access-list standard ACL_SSH
+ permit 172.20.254.11
+ deny any
+exit
+line vty 0 4
+ transport input ssh
+ login local
+ access-class ACL_SSH in
+exit
+end
+
+! En TITULCIA
+conf t
+ip domain-name empresa.local
+username admin secret cisco123
+crypto key generate rsa modulus 1024
+ip ssh version 2
+ip access-list standard ACL_SSH
+ permit 172.20.254.11
+ deny any
+exit
+line vty 0 4
+ transport input ssh
+ login local
+ access-class ACL_SSH in
+exit
+end
+
+! En ISP
+conf t
+ip domain-name empresa.local
+username admin secret cisco123
+crypto key generate rsa modulus 1024
+ip ssh version 2
+ip access-list standard ACL_SSH
+ permit 172.20.254.11
+ deny any
+exit
+line vty 0 4
+ transport input ssh
+ login local
+ access-class ACL_SSH in
+exit
+end
+
+! =========================================================
+! 11) COMANDOS DE COMPROBACIÓN (NO CONFIGURAN NADA)
+! =========================================================
+! Desde routers / SW2:
+!   show ip route
+!   show ip ospf neighbor
+!   show access-lists
+!   ping entre redes (Forja, Carpintería, VLAN10, VLAN20, ADM)
+!   hacer pruebas HTTP/FTP/DNS/ICMP a Internet y ver qué se permite/deniega
+! =========================================================

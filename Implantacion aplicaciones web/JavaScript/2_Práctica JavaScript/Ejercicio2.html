@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 2</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #configurador {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        fieldset {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+        }
+        legend {
+            font-weight: bold;
+            padding: 0 5px;
+        }
+        label {
+            margin-right: 15px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        input[type="radio"], input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        #total {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            color: #2a7a2a;
+        }
+        .Calcular {
+            border: #2a7a2a 1px solid;
+            font-size: X-large;
+            color: #2a7a2a;
+            font-weight: bold;
+            width: fit-content;
+            margin: 0 auto;
+            margin-top: 10px;
+            border-radius: 5px;
+            padding: 3px;
+            cursor: pointer;
+            background: linear-gradient(to bottom, #f5fcf5, #98c998);
+        }
+        .Calcular:hover{
+            background: #2a7a2a;
+            color: #98c998;
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+<div id="configurador">
+    <form id="Form">
+        <fieldset>
+            <legend>Configuración del Coche</legend>
+
+            <fieldset>
+                <legend>Tipo de Motor</legend>
+                <input type="radio" id="motorGasolina" name="motor" value="0" checked onchange="actualizarOpciones()">
+                <label for="motorGasolina">Gasolina</label>
+                
+                <input type="radio" id="motorDiesel" name="motor" value="1500" onchange="actualizarOpciones()">
+                <label for="motorDiesel">Diesel (+1500 €)</label>
+                
+                <input type="radio" id="motorHibrido" name="motor" value="3000" onchange="actualizarOpciones()">
+                <label for="motorHibrido">Híbrido (+3000 €)</label>
+            </fieldset>
+
+            <fieldset>
+                <legend>Tipo de Puertas</legend>
+                <input type="radio" id="puertas3" name="puertas" value="-2000" onchange="actualizarOpciones()">
+                <label for="puertas3">3 Puertas (-2000 €) (Solo con Gasolina)</label>
+                
+                <input type="radio" id="puertas5" name="puertas" value="0" checked onchange="actualizarOpciones()">
+                <label for="puertas5">5 Puertas</label>
+                
+                <input type="radio" id="puertasFamiliar" name="puertas" value="1500" onchange="actualizarOpciones()">
+                <label for="puertasFamiliar">Familiar (+1500 €)</label>
+            </fieldset>
+
+            <fieldset>
+                <legend>Tipo de Pintura</legend>
+                <input type="radio" id="colorRojo" name="color" value="0" checked onchange="actualizarOpciones()">
+                <label for="colorRojo">Rojo</label>
+
+                <input type="radio" id="colorVerde" name="color" value="0" onchange="actualizarOpciones()">
+                <label for="colorVerde">Verde</label>
+
+                <input type="radio" id="colorNaranja" name="color" value="0" onchange="actualizarOpciones()">
+                <label for="colorNaranja">Naranja</label>
+                
+                <input type="radio" id="colorBlanco" name="color" value="-500" onchange="actualizarOpciones()">
+                <label for="colorBlanco">Blanco (-500 €)</label>
+
+                <input type="radio" id="colorNegro" name="color" value="-600" onchange="actualizarOpciones()">
+                <label for="colorNegro">Negro (-600 €)</label>
+            </fieldset>
+
+            <fieldset>
+                <legend>Seleccionar los que se deseen:</legend>
+                <input type="checkbox" id="metalizada" name="extra" value="750">
+                <label for="metalizada">Metalizada (+750 €) (Solo Rojo, Verde o Naranja)</label><br>
+                
+                <input type="checkbox" id="llantas" name="extra" value="200">
+                <label for="llantas">Llantas (+200 €)</label><br> <input type="checkbox" id="climatizador" name="extra" value="800">
+                <label for="climatizador">Climatizador (+800 €)</label><br>
+                
+                <input type="checkbox" id="gps" name="extra" value="340">
+                <label for="gps">GPS (+340 €)</label><br>
+                
+                <input type="checkbox" id="dvd" name="extra" value="800">
+                <label for="dvd">DVD (+800 €) (Solo modelo Familiar)</label>
+            </fieldset>
+
+        </fieldset>
+    </form>
+    <div id="total">
+        Total a Cobrar: <span id="precioFinal"></span><br>
+        <button class="Calcular" onclick="calcularTotal()">Calcular</button>
+    </div>
+</div>
+
+
+<script>
+    var PRECIO_BASE = 12000;
+
+    var form = document.getElementById('Form');
+    var radioPuertas3 = document.getElementById('puertas3');
+    var radioPuertas5 = document.getElementById('puertas5');
+    var checkMetalizada = document.getElementById('metalizada');
+    var checkDvd = document.getElementById('dvd');
+    var precioFinalSpan = document.getElementById('precioFinal');
+
+    
+    function actualizarOpciones() {
+        var motorSeleccionado = form.elements['motor'].value;
+        if (motorSeleccionado !== '0') { 
+            radioPuertas3.disabled = true;
+            if (radioPuertas3.checked) {
+                radioPuertas5.checked = true;
+            }
+        } else {
+            radioPuertas3.disabled = false;
+        }
+
+        
+        var radiosColor = document.getElementsByName('color');
+        var colorSeleccionadoId = '';
+        for (var i = 0; i < radiosColor.length; i++) {
+            if (radiosColor[i].checked) {
+                colorSeleccionadoId = radiosColor[i].id;
+                break;
+            }
+        }
+
+        var coloresNoMetalizados = ['colorBlanco', 'colorNegro'];
+        if (colorSeleccionadoId === 'colorBlanco' || colorSeleccionadoId === 'colorNegro') {
+            checkMetalizada.disabled = true;
+            checkMetalizada.checked = false;
+        } else {
+            checkMetalizada.disabled = false;
+        }
+
+        var puertasSeleccionadas = form.elements['puertas'].value;
+        if (puertasSeleccionadas !== '1500') {
+            checkDvd.disabled = true;
+            checkDvd.checked = false;
+        } else {
+            checkDvd.disabled = false;
+        }
+    }
+
+    function calcularTotal() {
+        var total = PRECIO_BASE;
+
+        total += parseInt(form.elements['motor'].value);
+
+        total += parseInt(form.elements['puertas'].value);
+
+        total += parseInt(form.elements['color'].value);
+
+        var extras = form.elements['extra'];
+        for (var i=0;i < extras.length; i++) {
+            if (extras[i].checked) {
+                total += parseInt(extras[i].value);
+            }
+        }
+        
+        precioFinalSpan.textContent = total + " €";
+    }
+    actualizarOpciones()
+    calcularTotal();
+
+</script>
+
+</body>
+</html>

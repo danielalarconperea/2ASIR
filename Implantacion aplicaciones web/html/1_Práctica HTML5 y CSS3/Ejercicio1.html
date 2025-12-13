@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 1</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            color: #ffffff;
+            background-color: #000000;
+        }
+        
+        .parte1 h1 {
+            color: #000000;
+            background-color: #ffffff;
+            font-size: 1em;
+            font-weight: normal;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .parte2 {
+            background-color: orange;
+            text-align: center;
+            padding: 25px 40px;
+        }
+       
+        .logos-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px; 
+        }
+
+        .logos-container svg {
+            width: 200px; 
+            height: 200px;
+            color: #000000;
+        }
+
+        
+        .content-div {
+            text-align: center;
+            padding: 0px 0px 50px 0px; 
+            position: relative;
+            max-width: 900px; 
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .content-div h2 {
+            text-align: left;
+            font-size: 1.9em;
+            margin-top: 0;
+        }
+
+        #cms {
+            background-color: #2a8e86;
+        }
+
+        #cms p {
+            color: #000000;
+        }
+
+        #drupal {
+            background-color: #2e74b5;
+        }
+
+        #drupal p {
+            color: #000000;
+        }
+
+        #wordpress {
+            background-color: #000000;
+            padding-bottom: 35px;
+        }
+
+        .content-div p {
+            font-size: 0.95em;
+            line-height: 1.7;
+            text-align: justify;
+            margin-bottom: 1em;
+            margin-top: 0;
+        }
+    
+        .arrow-up-link {
+            position: absolute;
+            bottom: 20px;
+            right: 35px;
+            display: block;
+            width: 40px;
+            height: 40px;
+        }
+
+        .arrow-up-link svg {
+            width: 100%;
+            height: 100%;
+            fill: #000000;
+        }
+
+        p{
+            margin-left: 2em;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="parte1">
+        <h1>Sistemas de gestión de contenidos</h1>
+    </div>
+
+    <div class="parte2">
+        <div class="logos-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-newspaper" viewBox="0 0 16 16">
+                <path d="M0 2.5A1.5 1.5 0 0 1 1.5 1h11A1.5 1.5 0 0 1 14 2.5v10.528c0 .3-.05.654-.238.972h.738a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 1 1 0v9a1.5 1.5 0 0 1-1.5 1.5H1.497A1.497 1.497 0 0 1 0 13.5zM12 14c.37 0 .654-.211.853-.441.092-.106.147-.279.147-.531V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5v11c0 .278.223.5.497.5z"/>
+                <path d="M2 3h10v2H2zm0 3h4v3H2zm0 4h4v1H2zm0 2h4v1H2zm5-6h2v1H7zm3 0h2v1h-2zM7 8h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2zm-3 2h2v1H7zm3 0h2v1h-2z"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 50 50">
+                <path d="M 22 2 C 22 2 22.019531 3.949219 22 4.601563 C 22 4.617188 22.109375 5.890625 21.277344 8.132813 C 20.722656 9.546875 19.636719 10.484375 18.90625 10.746094 C 10.328125 13.351563 5 20.117188 5 28.402344 C 5 39.207031 13.972656 48 25 48 C 36.027344 48 45 39.207031 45 28.402344 C 45 19.449219 38.628906 12.113281 29.144531 10.128906 L 29.117188 10.125 C 28.597656 9.984375 27.375 9.894531 24 5 C 23.488281 4.257813 22 2 22 2 Z M 20.597656 24 C 23.550781 24 25.949219 25.546875 27.875 26.789063 C 29.019531 27.527344 30.078125 28.222656 30.757813 28.203125 C 31.519531 28.199219 33.007813 27.242188 34.203125 26.472656 C 35.777344 25.457031 37.265625 24.5 38.5 24.5 C 40.917969 24.5 42 26.558594 42 28.597656 C 42 29.8125 41.570313 32.175781 40.390625 33.707031 C 39.320313 35.101563 38.550781 35.9375 36.824219 35.796875 C 35.816406 35.722656 34.8125 34.78125 33.542969 33.59375 C 32.667969 32.773438 31.34375 31.53125 30.746094 31.5 C 30.113281 31.464844 29.125 32.085938 27.980469 32.800781 C 26.046875 34 23.402344 35.644531 19.691406 35.996094 C 19.472656 36.015625 19.230469 36.027344 18.976563 36.027344 C 17.777344 36.027344 16.261719 35.773438 15.144531 35.03125 C 13.253906 33.773438 13 32.085938 13 30.597656 C 13 26.835938 16.269531 24 20.597656 24 Z M 20.597656 26 C 17.40625 26 15 27.976563 15 30.597656 C 15 32.046875 15.316406 32.742188 16.253906 33.367188 C 17.070313 33.910156 18.503906 34.097656 19.503906 34.003906 C 22.746094 33.699219 25.0625 32.261719 26.921875 31.105469 C 27.746094 30.589844 28.472656 30.140625 29.171875 29.847656 C 28.421875 29.527344 27.636719 29.019531 26.785156 28.46875 C 24.992188 27.3125 22.964844 26 20.597656 26 Z M 38.5 26.5 C 37.855469 26.5 36.429688 27.417969 35.28125 28.15625 C 34.183594 28.863281 33.128906 29.542969 32.15625 29.910156 C 33.054688 30.398438 33.964844 31.246094 34.90625 32.128906 C 35.585938 32.765625 36.609375 33.722656 36.984375 33.800781 C 37.621094 33.859375 37.832031 33.753906 38.808594 32.488281 C 39.628906 31.421875 40 29.570313 40 28.597656 C 40 27.96875 39.855469 26.5 38.5 26.5 Z M 30.605469 35 C 33.824219 35 34.832031 37.535156 34.871094 37.640625 C 35.070313 38.15625 34.8125 38.734375 34.296875 38.933594 C 34.179688 38.980469 34.054688 39 33.9375 39 C 33.535156 39 33.15625 38.753906 33.003906 38.359375 C 32.949219 38.230469 32.386719 37 30.605469 37 C 28.613281 37 28.003906 38.246094 27.941406 38.390625 C 27.71875 38.890625 27.136719 39.125 26.636719 38.910156 C 26.132813 38.699219 25.886719 38.132813 26.09375 37.625 C 26.136719 37.519531 27.191406 35 30.605469 35 Z M 32.808594 40.039063 C 33.1875 39.964844 33.597656 40.117188 33.828125 40.464844 C 34.136719 40.921875 34.015625 41.542969 33.558594 41.851563 C 32.65625 42.460938 30.878906 43.65625 28.128906 43.65625 C 27.792969 43.65625 27.445313 43.636719 27.078125 43.597656 C 24.9375 43.371094 23.339844 42.75 22.320313 41.757813 C 21.925781 41.371094 21.917969 40.738281 22.304688 40.34375 C 22.691406 39.949219 23.324219 39.941406 23.71875 40.328125 C 24.398438 40.988281 25.632813 41.433594 27.292969 41.609375 C 29.917969 41.886719 31.558594 40.785156 32.4375 40.191406 C 32.554688 40.113281 32.679688 40.0625 32.808594 40.039063 Z"></path>
+            </svg>  
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wordpress" viewBox="0 0 16 16">
+                <path d="M12.633 7.653c0-.848-.305-1.435-.566-1.892l-.08-.13c-.317-.51-.594-.958-.594-1.48 0-.63.478-1.218 1.152-1.218q.03 0 .058.003l.031.003A6.84 6.84 0 0 0 8 1.137 6.86 6.86 0 0 0 2.266 4.23c.16.005.313.009.442.009.717 0 1.828-.087 1.828-.087.37-.022.414.521.044.565 0 0-.371.044-.785.065l2.5 7.434 1.5-4.506-1.07-2.929c-.369-.022-.719-.065-.719-.065-.37-.022-.326-.588.043-.566 0 0 1.134.087 1.808.087.718 0 1.83-.087 1.83-.087.37-.022.413.522.043.566 0 0-.372.043-.785.065l2.48 7.377.684-2.287.054-.173c.27-.86.469-1.495.469-2.046zM1.137 8a6.86 6.86 0 0 0 3.868 6.176L1.73 5.206A6.8 6.8 0 0 0 1.137 8"/>
+                <path d="M6.061 14.583 8.121 8.6l2.109 5.78q.02.05.049.094a6.85 6.85 0 0 1-4.218.109m7.96-9.876q.046.328.047.706c0 .696-.13 1.479-.522 2.458l-2.096 6.06a6.86 6.86 0 0 0 2.572-9.224z"/>
+                <path fill-rule="evenodd" d="M0 8c0-4.411 3.589-8 8-8s8 3.589 8 8-3.59 8-8 8-8-3.589-8-8m.367 0c0 4.209 3.424 7.633 7.633 7.633S15.632 12.209 15.632 8C15.632 3.79 12.208.367 8 .367 3.79.367.367 3.79.367 8"/>
+            </svg>
+        </div>
+    </div>
+
+    <div id="cms" class="main-content">
+        <div class="content-div">
+            <h2>CMS</h2>
+            <p>Un Sistema de Gestión de Contenidos (en inglés, Content Management System, CMS), es un programa informático que permite a un grupo de usuarios crear y administrar contenidos en un sitio web.</p>
+            <p>Un CMS controla una o varias bases de datos en las que se aloja el contenido del sitio web. El sistema permite manejar de manera independiente el contenido y el diseño. Así, es posible manejar el contenido y darle en cualquier momento un diseño distinto al sitio web sin tener que darle formato al contenido de nuevo. Además, el sistema facilita la publicación del sitio a varios editores, con capacidades distintas (creación, publicación, modificación, borrado, etc.)</p>
+            <a href="#" class="arrow-up-link" aria-label="Subir">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+    <div id="drupal" class="main-content">
+        <div class="content-div">
+            <h2>Drupal</h2>
+            <p>Drupal es CMS libre, modular, multipropósito y muy configurable que permite publicar artículos, imágenes u otros archivos, y que proporciona servicios añadidos como foros, encuestas, votaciones, blogs, o administración de usuarios y permisos.</p>
+            <p>Es un programa libre, con licencia GNU/GPL, escrito en PHP, compatible con MySQL, desarrollado y mantenido por una activa comunidad de usuarios. Destaca por la calidad de su código y de las páginas generadas, el respeto de los estándares de la web, y un énfasis especial en la usabilidad y consistencia de todo el sistema.</p>
+            <p>El diseño de Drupal es especialmente idóneo para construir y gestionar comunidades en internet. No obstante, su flexibilidad y adaptabilidad, así como la gran cantidad de módulos adicionales disponibles, hace que sea adecuado para realizar muchos tipos diferentes de sitio web.</p>
+            <a href="#" class="arrow-up-link" aria-label="Subir">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 0 0 8a8 8 0 0 0 16 0m-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+    <div id="wordpress" class="main-content">
+        <div class="content-div">
+            <h2>WordPress</h2>
+            <p>WordPress es un CMS enfocado a la creación de blogs (sitios web periódicamente actualizados). Ha sido desarrollado en PHP para entornos que ejecuten MySQL y Apache, bajo licencia GPL y código modificable, y su fundador es Matt Mullenweg. WordPress fue creado a partir del desaparecido b2/cafelog y se ha convertido en el CMS más popular, debido a su licencia, facilidad de uso y características.</p>
+            <p>Otra causa y consecuencia de su éxito es la enorme comunidad de desarrolladores y diseñadores encargados de desarrollarlo o crear complementos y temas para la comunidad.</p>
+            <p>En agosto de 2013 se estimó que era usado por el 20% de todos los sitios existentes en Internet.</p>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+! En Titulcia hay dos VLAN, 10 y 20
+
+! Configura direccionamiento en la red
+! Configura OSPF de área única
+! Habilita LLDP y NTP en cada router y SW2
+! Almacena los mensajes de consola en el servidor SYSLOG. Habilita las marcas de tiempo de estos mendajes
+
+! Comprueba la conectividad
+
+! FORJA Atesana
+!    Prohibido el tráfico a FUNDICIÓN y DISEÑO
+!    Permitido ICMP a cualquier red
+
+! CARPINTERÍA METÁLICA
+!    Denegado tráfico a equipos 1 al 63 de  FORJA ARTESANA, por puertos FTP y TFTP
+!    Denegado tráfico ICMP a  DISEÑO
+
+! TODAS LAS REDES
+!   Permitido el tráfico WEB, FTP Y DNS a internet.
+!   Permitido ICMP
+!   Resto de puertos denegados
+
+! DESDE INTERNET
+!   Permitido sólo el tráfico de retorno.
+
+! Protege los router y switch del acceso no deseado, sólo el equipo Adm puede hacer SSH
+
+! Comprueba el funcionamiento de las ACL
+
+
+####################################################################################################
+
+
+! Configura direccionamiento en la red
+
+! Configura OSPF de área única
+! Habilita LLDP y NTP en cada router y SW2
+! Almacena los mensajes de consola en el servidor SYSLOG. Habilita las marcas de tiempo de estos mendajes
+

@@ -1,0 +1,278 @@
+################################################################################
+### 1\. 🌐 Configuraciones Globales (Aplicar en Alpedrete, Titulcia, SW2 e ISP) #
+################################################################################
+
+configure terminal
+
+lldp run
+service timestamps log datetime msec
+logging host 172.20.25.10
+ntp server 172.20.25.10
+service timestamps log datetime msec
+
+! --- Inicio de Configuración de Seguridad SSH ---
+ip domain-name miempresa.local
+crypto key generate rsa modulus 1024
+username admin privilege 15 secret 0 Cisco123
+
+! Define la ACL que SÓLO permite al PC de Admin (172.20.25.11)
+ip access-list standard SSH_ACL
+ ! Permite SÓLO al host de Administración
+ permit host 172.20.25.11
+ ! Deniega todo lo demás
+ deny any log
+
+line vty 0 4
+ access-group SSH_ACL in
+ transport input ssh
+ login local
+exit
+
+
+
+###############################################
+### 2\. 🛡️ Switch SW2 (Switch Capa 3 - Core) #
+##############################################
+
+enable
+configure terminal
+
+ip routing
+
+hostname SW2
+
+! (Aplica aquí las configuraciones globales de la sección 1)
+
+! --- Creación de VLANs ---
+vlan 10
+ name FUNDICION
+vlan 20
+ name DISENO
+vlan 30
+ name CARPINTERIA_METALICA
+vlan 40
+ name ADMIN
+
+! --- Configuración de Interfaces Virtuales (SVI) - Gateways ---
+interface Vlan10
+ description Gateway para FUNDICION
+ ip address 172.20.2.1 255.255.255.0
+exit
+
+interface Vlan20
+ description Gateway para DISENO
+ ip address 172.20.3.1 255.255.255.0
+exit
+
+interface Vlan30
+ description Gateway para CARPINTERIA_METALICA
+ ip address 172.20.1.1 255.255.255.0
+ ! Aplica la ACL de Carpintería en la entrada
+ ip access-group CARPINTERIA_IN in
+exit
+
+interface Vlan40
+ description Gateway para ADMIN
+ ip address 172.20.25.1 255.255.255.0
+exit
+
+! --- Configuración de ACL para CARPINTERÍA ---
+ip access-list extended CARPINTERIA_IN
+ ! Denegado FTP/TFTP a FORJA (hosts .1 a .63)
+ deny   tcp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 20
+ deny   tcp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 21
+ deny   udp 172.20.1.0 0.0.0.255 172.20.0.0 0.0.0.63 eq 69
+ ! Denegado ICMP a DISENO
+ deny   icmp 172.20.1.0 0.0.0.255 172.20.3.0 0.0.0.255
+ ! Se permite todo el resto del tráfico
+ permit ip 172.20.1.0 0.0.0.255 any
+exit
+
+! --- Configuración de Puertos de Capa 3 (Enlaces a Routers) ---
+! (Uso los puertos del diagrama 1, el más detallado)
+interface GigabitEthernet1/0/22
+ description Enlace a Router Alpedrete
+ no switchport
+ ! IP .2 de la red 172.20.255.0/30
+ ip address 172.20.255.2 255.255.255.252
+exit
+
+interface GigabitEthernet1/0/21
+ description Enlace a Router Titulcia
+ no switchport
+ ! IP .6 de la red 172.20.255.4/30
+ ip address 172.20.255.6 255.255.255.252
+exit
+
+interface GigabitEthernet1/0/23
+ description Enlace a Router ISP
+ no switchport
+ ! IP .9 de la red 172.20.255.8/30
+ ip address 172.20.255.9 255.255.255.252
+exit
+
+! --- Configuración OSPF (Área Única 0) ---
+router ospf 1
+ ! Anuncia todas las redes conectadas a SW2
+ network 172.20.1.0 0.0.0.255 area 0
+ network 172.20.2.0 0.0.0.255 area 0
+ network 172.20.3.0 0.0.0.255 area 0
+ network 172.20.25.0 0.0.0.255 area 0
+ network 172.20.255.0 0.0.0.3 area 0
+ network 172.20.255.4 0.0.0.3 area 0
+ network 172.20.255.8 0.0.0.3 area 0
+exit
+
+
+
+##############################
+### 3\. 🔩 Router Alpedrete #
+#############################
+
+enable
+configure terminal
+
+hostname Alpedrete
+
+! (Aplica aquí las configuraciones globales de la sección 1)
+
+! --- Configuración de Interfaces ---
+interface GigabitEthernet0/0/0
+ description Gateway para FORJA-Artesana
+ ! El .1 será el gateway para la red 172.20.0.0/24
+ ip address 172.20.0.1 255.255.255.0
+ ! Aplica la ACL de FORJA en la entrada
+ ip access-group FORJA_IN in
+exit
+
+interface GigabitEthernet0/0/1
+ description Enlace a SW2
+ ! IP .1 de la red 172.20.255.0/30
+ ip address 172.20.255.1 255.255.255.252
+exit
+
+interface Serial0/1/0
+ description Enlace WAN a Titulcia
+ ! IP .1 de la red 192.168.255.0/30
+ ip address 192.168.255.1 255.255.255.252
+ ! (Ajusta si es el extremo DCE)
+ clock rate 128000 
+exit
+
+! --- Configuración de ACL para FORJA ---
+ip access-list extended FORJA_IN
+ ! Prohibido tráfico a FUNDICION (VLAN 10)
+ deny   ip 172.20.0.0 0.0.0.255 172.20.2.0 0.0.0.255
+ ! Prohibido tráfico a DISENO (VLAN 20)
+ deny   ip 172.20.0.0 0.0.0.255 172.20.3.0 0.0.0.255
+ ! Permitido ICMP a cualquier red
+ permit icmp 172.20.0.0 0.0.0.255 any
+ ! Se permite todo el resto del tráfico
+ permit ip 172.20.0.0 0.0.0.255 any
+exit
+
+! --- Configuración OSPF (Área Única 0) ---
+router ospf 1
+ ! Anuncia todas las redes conectadas a Alpedrete
+ network 172.20.0.0 0.0.0.255 area 0
+ network 172.20.255.0 0.0.0.3 area 0
+ network 192.168.255.0 0.0.0.3 area 0
+exit
+
+
+###############################
+### 4\. 🔩 Router Titulcia ###
+##############################
+
+Este router sirve como enlace redundante/secundario.
+
+
+enable
+configure terminal
+
+hostname Titulcia
+
+! (Aplica aquí las configuraciones globales de la sección 1)
+
+! --- Configuración de Interfaces ---
+interface Serial0/1/0
+ description Enlace WAN a Alpedrete
+ ! IP .2 de la red 192.168.255.0/30
+ ip address 192.168.255.2 255.255.255.252
+exit
+
+interface GigabitEthernet0/0/0
+ description Enlace a SW2
+ ! IP .5 de la red 172.20.255.4/30
+ ip address 172.20.255.5 255.255.255.252
+exit
+
+! --- Configuración OSPF (Área Única 0) ---
+router ospf 1
+ ! Anuncia todas las redes conectadas a Titulcia
+ network 172.20.255.4 0.0.0.3 area 0
+ network 192.168.255.0 0.0.0.3 area 0
+exit
+
+
+-----
+########################
+### 5\. ☁️ Router ISP #
+#######################
+
+enable
+configure terminal
+
+hostname ISP
+
+! (Aplica aquí las configuraciones globales de la sección 1)
+
+! --- Configuración de Interfaces ---
+interface GigabitEthernet0/0/0
+ description Enlace INTERNO a SW2
+ ! IP .10 de la red 172.20.255.8/30
+ ip address 172.20.255.10 255.255.255.252
+ ! Define esta interfaz como la "interna" para NAT
+ ip nat inside
+exit
+
+interface GigabitEthernet0/0/1
+ description Enlace EXTERNO a Internet
+ ! Usamos una IP pública, ej: 209.165.200.225 (del diagrama)
+ ip address 209.165.200.225 255.255.255.224 
+ ! Define esta interfaz como la "externa" para NAT
+ ip nat outside
+ ! Aplica la ACL para tráfico entrante de Internet
+ ip access-group INTERNET_IN in
+exit
+
+! --- Configuración de NAT/PAT ---
+! 1. Define qué tráfico interno puede salir (todas las redes 172.20.x.x)
+ip access-list standard NAT_ACL
+ permit 172.20.0.0 0.0.255.255
+! 2. Configura NAT (PAT) para sobrecargar todo en la IP de Gig0/0/0
+ip nat inside source list NAT_ACL interface GigabitEthernet0/0/0 overload
+
+! --- ACL para "DESDE INTERNET" ---
+! "Permitido sólo el tráfico de retorno"
+ip access-list extended INTERNET_IN
+ ! Permite el tráfico de retorno (NAT, ICMP, etc.)
+ permit tcp any any established
+ permit udp any any
+ permit icmp any any echo-reply
+ permit icmp any any time-exceeded
+ permit icmp any any unreachable
+ ! Deniega explícitamente todo lo demás (tráfico no solicitado)
+ deny ip any any log
+exit
+
+! --- Ruta por Defecto y Propagación OSPF ---
+ip route 0.0.0.0 0.0.0.0 209.165.200.226
+
+router ospf 1
+ ! Anuncia la red interna conectada (hacia SW2)
+ network 172.20.255.8 0.0.0.3 area 0
+ ! Inyecta la ruta por defecto en OSPF para que las redes internas
+ ! sepan cómo salir a Internet a través del router ISP.
+ default-information originate
+exit

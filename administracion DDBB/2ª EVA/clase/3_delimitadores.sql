@@ -1,0 +1,12 @@
+delimiter pepe
+CREATE PROCEDURE LISTAR_VENTAS2()
+BEGIN
+    SELECT * FROM cliente;
+    SELECT * FROM comercial;
+    SELECT * FROM pedido;
+END pepe
+
+delimiter ;
+CALL LISTAR_VENTAS2();
+
+DROP PROCEDURE LISTAR_VENTAS2;

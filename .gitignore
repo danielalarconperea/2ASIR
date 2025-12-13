@@ -1,0 +1,12 @@
+**/.vscode
+**/.ven
+**/env
+**/desktop.ini
+**/GIT
+**/OTRO
+**/Thumbs.db
+**/venv
+**/__pycache__
+*.log
+*.pyc
+.DS_Store

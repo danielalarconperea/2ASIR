@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #d3d3d3; 
+            color: #000;
+        }
+
+        .div1 {
+            background-color: #d3d3d3;
+            padding: 30px 0 0px 0px;
+            box-sizing: border-box;
+            display: flex;
+        }
+
+        .logo_arduino{
+            background-image: url('./ayuda_p1/logo_arduino.png');
+            background-repeat: repeat-y;
+            background-position: 50px 0px;
+            width: 100px;
+            padding-right: 50px;
+        }
+
+        .div1 h1 {
+            letter-spacing: 1ex;
+            background-color: #000; 
+            color: white;
+            padding: 5px 10px;
+            font-size: 1.8em;
+            margin: 0;
+        }
+
+        .div2 ul li a {
+            text-decoration: underline;
+            color: #000;
+            font-size: 0.9em;
+        }
+
+        .div2 {
+            display: flex;
+            height: 80vh;
+        }
+
+
+        .content {
+            flex-grow: 1;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+
+        .div-content {
+            padding: 0px 50px 0px 0px;
+            margin: 0px;
+        }
+
+        .intro-text {
+            font-size: 0.9em;
+            top: -30px;
+            position: relative;
+        }
+
+        .section-header {
+            background-color: #000;
+            color: white;
+            padding: 5px 10px;
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .section-description {
+            font-size: 0.9em;
+        }
+
+        .image-container {
+            text-align: left;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="div1">
+        <h1>MiniPCs</h1>
+        <p class="intro-text">En los últimos años están apareciendo multitud de miniordenadores. Estos son algunos de ellos:</p>
+    </div>
+    <div class="div2">
+        <div>
+            <ul>
+                <li>
+                    <a href="#">Arduino</a>
+                </li>
+                <li>
+                    <a href="#">BeagleBone Black</a>
+                </li>
+                <li>
+                    <a href="#">CubieTruck</a>
+                </li>
+                <li>
+                    <a href="#">Raspberry Pi</a>
+                </li>
+            </ul>
+        </div>
+        <div class="logo_arduino"></div>
+        <div class="content">
+            <div class="div-content">
+                <h2 class="section-header">ARDUINO</h2>
+                <p class="section-description">Arduino es una plataforma de hardware libre que ofrece microcontroladores en pequeñas placas</p>
+                <div class="image-container">
+                    <img src="./ayuda_p1/arduino2.jpg" alt="Placa Arduino">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

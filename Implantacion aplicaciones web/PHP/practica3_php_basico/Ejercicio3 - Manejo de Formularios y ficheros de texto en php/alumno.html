@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div{
+            border: 2px solid black;
+            padding: 5px;
+        }
+        h1{
+            margin: 0 0 6px 0;
+        }
+    </style>
+</head>
+<body>
+    <form action="datos_alumnos.php" method="post">
+        <div>
+            <h1>DATOS DEL ALUMNO:</h1>
+            <label for="nombre">Introduzca su nombre</label>
+            <input type="text" name="nombre"><br>
+
+            <label for="telefono">Introduzca su telefono</label>
+            <input type="number" name="numero"><br>
+
+            <label for="matricula">Matriculado</label>
+            <input type="checkbox" name="matricula"><br>
+
+            <label for="enseñanza">Enseñanza:</label>
+            <input type="radio" name="enseñanza" value="Secundaria">Secundaria
+            <input type="radio" name="enseñanza" value="Bachillerato">Bachillerato
+            <input type="radio" name="enseñanza" value="un Ciclo Medio">Ciclo Medio
+            <input type="radio" name="enseñanza" value="un Ciclo Superior">Ciclo Superior
+            <br>
+            
+            <label for="ver_datos">Mostrar datos:</label>
+            <select name="ver_datos">
+                <option value="pantalla">Por Pantalla</option>
+                <option value="fichero">Enviar a un fichero</option>
+            </select>
+        </div>
+        <input type="submit" value="Enviar datos">
+    </form>
+</body>
+</html>

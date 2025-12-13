@@ -1,0 +1,1 @@
+El alumno <b>Juan</b>, con teléfono <b>456745674567</b>, <b>no está matriculado en un Ciclo Medio</b>

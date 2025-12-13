@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio5 - Opcional</title>
+    
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .calculator {
+            border: 2px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            overflow: hidden;
+            width: 300px;
+        }
+        .display {
+            background-color: #222;
+            color: #fff;
+            font-size: 2.5em;
+            text-align: right;
+            padding: 20px;
+            height: 70px;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+        button {
+            background-color: #f2f2f2;
+            border: 1px solid #ccc;
+            font-size: 1.5em;
+            padding: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #e0e0e0;
+        }
+        .operator {
+            background-color: #f9a825;
+            color: white;
+        }
+        .operator:hover {
+            background-color: #fbc02d;
+        }
+        .clear, .equals {
+            background-color: #757575;
+            color: white;
+        }
+        .clear:hover, .equals:hover {
+            background-color: #9e9e9e;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <div class="display" id="display"></div>
+        <div class="buttons">
+            <button name="button" value="1">1</button>
+            <button name="button" value="2">2</button>
+            <button name="button" value="3">3</button>
+            <button name="button" class="operator" value="+">+</button>
+
+            <button name="button" value="4">4</button>
+            <button name="button" value="5">5</button>
+            <button name="button" value="6">6</button>
+            <button name="button" class="operator" value="-">-</button>
+
+            <button name="button" value="7">7</button>
+            <button name="button" value="8">8</button>
+            <button name="button" value="9">9</button>
+            <button name="button" class="operator" value="*">x</button>
+
+            <button name="button" class="clear" value="c">c</button>
+            <button name="button" value="0">0</button>
+            <button name="button" class="equals" value="=">=</button>
+            <button name="button" class="operator" value="/">/</button>
+        </div>
+    </div>
+
+    <script>
+        var display = document.getElementById('display');
+        var buttons = document.getElementsByName('button');
+
+        
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].addEventListener('click', function() { // .addEventListener conecta las acciones del usuario con el código JavaScript
+                
+                var buttonValue = this.value; // 'this' se refiere al botón que fue presionado.
+
+                if (buttonValue === 'c') {
+                    display.textContent = '';
+                } else if (buttonValue === '=') {
+                    if (display.textContent === ''){
+                        return;
+                    }else{
+                        try { // Usamos un try para controlar los errores, que no la hemos dado pero es muy sencilla de usar.
+                        var result = eval(display.textContent.replace('x', '*')); // Reemplazamos 'x' por '*' para el cálculo.
+                        // Usamos eval() que lo que hace esta función es interpretar una cadena de texto como si fuera código y la ejecuta.
+                        display.textContent = result;
+                        } catch (error) {
+                            display.textContent = 'Error';
+                        }
+                    }
+                } else {
+                    display.textContent += buttonValue;
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

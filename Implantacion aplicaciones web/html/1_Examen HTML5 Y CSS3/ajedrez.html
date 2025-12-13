@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Sin título. Escriba su nombre</title>
+  <style>
+    @font-face {
+      font-family: "FredokaOne";
+      src: url("fredoka-one.woff");
+    }
+    body{
+      background: url(./cuadros.png) repeat-y top left, url(./cuadros.png) repeat-y top right; 
+      background-color: rgb(0, 180, 171);
+      text-align: justify;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    h1,h2{
+      margin: 0;
+    }
+
+    .container{
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    hr{
+      background-color: rgb(0, 88, 84);
+      height: 4px;
+      border: 0;
+    }
+
+    .titulo{
+      text-align: center;
+      text-shadow: 1px -1px rgb(255, 255, 255);
+      color: rgb(0, 88, 84);
+      font-size: 50px;
+      font-family: FredokaOne; 
+      font-weight: lighter;
+    }
+    .titulo2{
+      color: rgb(0, 88, 84);
+      font-size: 30px;
+      font-family: FredokaOne; 
+      font-weight: lighter;
+    }
+
+    .container2{
+      display: flex;
+    }
+    .img1{
+      padding: 8px;
+      border: 5px solid black;
+      margin-left: 10px;
+    }
+
+    .container3{
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 2em; 
+      margin: 20px 200px 0 20px;
+    }
+    .sub-container3{
+      padding: 5px 10px 10px 10px;
+      border: 5px solid white;
+      border-radius: 0 30px 30px 0;
+      height: 180px;
+    }
+    .sub-container3 h1{
+      text-align: center;
+      font-family: FredokaOne; 
+      font-weight: lighter;
+    }
+    .container4{
+      text-align: center;
+    }
+    .img2{
+      padding: 10px;
+      border: 5px solid black;
+      text-align: center;
+      width: 700px;
+    }
+    .linea{
+      width: 900px;
+      margin-top: 20px;
+      border-top: 5px solid black;
+      height: 10px;
+      background-color: white;
+    }
+    .container5{
+      text-align: center;
+    }
+    .Wikipedia{
+      color: rgb(0, 110, 255);
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="titulo">Ajedrez por ordenador</h1>
+    <hr>
+    
+    <div class="container2">
+      <div>
+        <h2 class="titulo2">Historia del ajedrez</h2>
+        <p>
+            El ajedrez es posiblemente el juego de estrategia de tablero más conocido del mundo. Se cree que el juego fue inventado en la India en el siglo VI, aunque las reglas del ajedrez moderno se crearon a finales del siglo XV, muy probablemente en la ciudad de Valencia, que en aquella época era el centro económico, político y social de la Corona de Aragón.
+        </p>
+      </div>
+      <img class="img1" src="./tablero.png" alt="">
+    </div>
+    <hr>
+
+    <h2 class="titulo2">Las máquinas también juegan</h2>
+    <p>
+      La primera máquina capaz de jugar al ajedrez fue construida en 1912 por el ingeniero e inventor Leonardo Torres Quevedo, aunque sólo era capaz de jugar un caso muy particular, dar jaque mate con rey y torre contra rey.
+    </p><p>
+      En 1950, Alan Turing escribió el primer programa de ordenador teóricamente capaz de jugar al ajedrez, aunque ese programa nunca llegó a ejecutarse en un ordenador.
+    </p><p>
+      En principio, lo "único" que tiene que hacer un programa es calcular todas las jugadas posibles y elegir la que conduce al mate. El problema es que la cantidad de jugadas posibles del ajedrez es tan gigantesco que seguramente ningún ordenador tendrá nunca esa capacidad. En su lugar, los ordenadores se tienen que conformar con explorar todas las posibilidades de las siguientes jugadas e intentar evaluar cuál es la posición más ventajosa, como hacen los humanos.
+    </p><p>
+      Desde 1950, los programas de ordenador han ido mejorando en ambos aspectos. El aumento de potencia bruta del hardware ha permitido ir aumentando el número de jugadas exploradas, es decir, la profundidad de la búsqueda. Y al mismo tiempo, los programadores han ido mejorando la función de evaluación de los programas, en busca de la mejor jugada posible en cada movimiento.
+    </p><p>
+      En 1957 Alex Bernstein programó en un IBM 704, uno de los últimos ordenadores basados en válvulas de vacío, el primer programa capaz de jugar partidas completas. Ese programa marcó el comienzo de la batalla entre humanos y máquinas, que se prolongó durante 50 años, pero que ya ha sido ganada definitivamente por las máquinas.
+    </p>
+    <hr>
+
+    <h2 class="titulo2">Cronología de la batalla</h2>
+    <div class="container3">
+      <div class="sub-container3">
+        <h1>1957</h1>
+        <p>
+          Alex Bernstein escribió el primer programa que jugó partidas completas.
+        </p>
+      </div>
+      <div class="sub-container3">
+        <h1>1962</h1>
+        <p>
+          Alan Kotok escribió el primer programa que ganó a novatos.
+        </p>
+      </div>
+      <div class="sub-container3">
+        <h1>1967</h1>
+        <p>
+          Richard Greenblat escribió Mac Hack, el primer programa que ganó partidas en torneos.
+        </p>
+      </div>
+      <div class="sub-container3">
+        <h1>1981</h1>
+        <p>
+          Robert Hyatt escribió Cray Blitz, el primer programa que ganó una partida a un maestro.
+        </p>
+      </div>
+      <div class="sub-container3">
+        <h1>1988</h1>
+        <p>
+          Feng-hsiung Hsu escribió Deep Thought, el primer programa que ganó una partida en un torneo a un gran maestro, Bent Larsen.
+        </p>
+      </div>
+      <div class="sub-container3">
+        <h1>1994</h1>
+        <p>
+          Richard Lang escribió Chess Genius, el primer programa que ganó una partida al campeón del mundo, Gary Kasparov.
+        </p>
+    
+      </div>
+      <div class="sub-container3">
+        <h1>1997</h1>
+        <p>
+          IBM escribió Deep Blue, el primer programa que ganó un torneo al campeón del mundo, Gary Kasparov, aunque este denunció trampas y no aceptó el resultado.
+        </p>
+      </div>
+      <div class="sub-container3">
+        <h1>2006</h1>
+        <p>
+          La empresa ChessBase escribió Deep Fritz, el primer programa de PC que ganó al campeón del mundo, Vladimir Kramnik.
+        </p>
+      </div>
+    </div>
+    <p>
+      La gráfica siguiente muestra la evolución de la puntuación ELO de los mejores jugadores de ajedrez y de los mejores programas de ajedrez:
+    </p>
+    <div class="container4">
+      <img class="img2" src="./grafica.svg" alt="">
+    </div>
+    <hr class="linea">
+
+    <div class="container5">
+      <div>Datos obtenidos en <span class="Wikipedia">Wikipedia</span></div>
+      <div>Última modificación: 29 de mayo de 2024</div>
+      
+    </div>
+    
+  </div>
+
+</body>
+</html>

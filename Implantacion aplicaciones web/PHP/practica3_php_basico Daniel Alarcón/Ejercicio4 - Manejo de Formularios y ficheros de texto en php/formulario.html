@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agenda - Añadir Contacto</title>
+    <style>
+        body { font-family: sans-serif; width: 800px; margin: 20px auto; }
+        form { border: 1px solid #ccc; padding: 15px; }
+        input[type="text"],input[type="number"] { width: 85%; margin-bottom: 10px; }
+        label { display: inline-block; width: 10%; }
+        nav { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <h1>Agenda Virtual PHP</h1>
+
+    <nav>
+        <a href="formulario.html">Añadir Contacto</a> | 
+        <a href="mostrar_contactos.php">Ver Todos</a> | 
+        <a href="buscar.html">Buscar</a>
+    </nav>
+
+    <h1>Contactos</h1>
+    <p>Para guardar presione el boton</p>
+
+    <form action="guardar_contactos.php" method="POST">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br>
+
+        <label for="trabajo">Trabajo:</label>
+        <input type="text" id="trabajo" name="trabajo"><br>
+        
+        <label for="telefono">Telefono:</label>
+        <input type="number" id="telefono" name="telefono"><br>
+        
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" name="direccion"><br>
+        
+        <label for="otras">Otras:</label>
+        <input type="text" id="otras" name="otras"><br>
+        
+        <button type="submit" name="guardar">Guardar!</button>
+        <button type="reset">Reset</button>
+    </form>
+
+</body>
+</html>
