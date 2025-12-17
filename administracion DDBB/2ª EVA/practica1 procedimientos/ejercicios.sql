@@ -4,6 +4,8 @@
 
 -- Ejemplo de llamada: CALL ListarClientesPorCiudad('Sevilla'); 
 
+drop procedure if exists ListarClientesPorCiudad;
+
 CREATE PROCEDURE ListarClientesPorCiudad(IN ciudad_in VARCHAR(100))
 SELECT CONCAT(cl.nombre,' ',cl.apellido1) AS Nombre_Completo, cl.ciudad
 FROM cliente cl 
@@ -15,6 +17,8 @@ CALL ListarClientesPorCiudad('Sevilla');
 -- Procedimiento 2: Crea un procedimiento llamado MostrarPedidosRecientes que reciba un número N como parámetro y muestre los N pedidos más recientes ordenados por fecha descendente. 
 
 -- Ejemplo de llamada: CALL MostrarPedidosRecientes(5); 
+
+drop procedure if exists MostrarPedidosRecientes;
 
 CREATE PROCEDURE MostrarPedidosRecientes(IN numero_pedidos INT)
 SELECT p.id, p.fecha, p.id_cliente, p.total
@@ -28,6 +32,8 @@ CALL MostrarPedidosRecientes(5);
 -- Procedimiento 3: Crea un procedimiento llamado ActualizarTotalComprasCliente que reciba el ID de un cliente y recalcule su total de compras sumando todos sus pedidos. 
 
 -- Ejemplo de llamada: CALL ActualizarTotalComprasCliente(1); 
+
+drop procedure if exists ActualizarTotalComprasCliente;
 
 CREATE PROCEDURE ActualizarTotalComprasCliente(IN idCliente INT)
 SELECT CONCAT(cl.nombre, cl.apellido1) AS "Cliente", SUM(p.total) AS "Total en compras"
@@ -44,6 +50,8 @@ CALL ActualizarTotalComprasCliente(1);
 
 -- Ejemplo de llamada: CALL ListarComercialesConComision(0.12); 
 
+drop procedure if exists ListarComercialesConComision;
+
 CREATE PROCEDURE ListarComercialesConComision(IN comision_minima FLOAT)
 SELECT c.id, CONCAT(c.nombre,' ',c.apellido1) AS comercial, c.comisión
 FROM comercial c
@@ -56,6 +64,7 @@ CALL ListarComercialesConComision(0.12);
 
 -- Ejemplo de llamada: CALL InsertarNuevoComercial('Carlos', 'García', 'López', 0.10); 
 
+drop procedure if exists InsertarNuevoComercial;
 
 CREATE PROCEDURE InsertarNuevoComercial(
     IN nombre_in VARCHAR(100),
@@ -68,12 +77,17 @@ VALUES (nombre_in, apellido1_in, apellido2_in, comision_in);
 
 CALL InsertarNuevoComercial('Carlos', 'García', 'López', 0.10);
 
+select * from comercial;
+
+delete from comercial where nombre='Carlos' and apellido1='García' and apellido2='López';
 
 -- FUNCIONES 
 
 -- Función 1: Crea una función llamada TotalComprasCliente que reciba el ID de un cliente y devuelva la suma total de todos sus pedidos. 
 
 -- Ejemplo de uso: SELECT TotalComprasCliente(1);
+
+drop function if exists TotalComprasCliente;
 
 SET GLOBAL log_bin_trust_function_creators = 1;
 
@@ -98,6 +112,8 @@ SELECT TotalComprasCliente(1) AS Total_Compras_Cliente;
 
 -- Ejemplo de uso: SELECT NombreCompletoCliente(1); 
 
+drop function if exists NombreCompletoCliente;
+
 SET GLOBAL log_bin_trust_function_creators = 1;
 
 DELIMITER $$
@@ -119,6 +135,8 @@ SELECT NombreCompletoCliente(1) AS Nombre_Completo;
 
 -- Ejemplo de uso: SELECT DiasDesdeUltimoPedido(2); 
 
+drop function if exists DiasDesdeUltimoPedido;
+
 SET GLOBAL log_bin_trust_function_creators = 1;
 
 DELIMITER $$
@@ -135,14 +153,17 @@ DELIMITER ;
 SELECT DiasDesdeUltimoPedido(1) AS Dias_Desde_Ultimo_Pedido;
 
 -- Otra forma de hacer la función 3 (mal hecha)
+
+drop function if exists DiasDesdeUltimoPedido2;
+
 SET GLOBAL log_bin_trust_function_creators = 1;
 
 DELIMITER $$
-CREATE FUNCTION DiasDesdeUltimoPedido(idCliente INT)
+CREATE FUNCTION DiasDesdeUltimoPedido2(idCliente INT)
 RETURNS INT
 BEGIN
 DECLARE dias_transcurridos INT;
-SELECT (date(now()) - p.fecha) INTO dias_transcurridos
+SELECT DATEDIFF(CURDATE(), MAX(p.fecha)) INTO dias_transcurridos
 FROM pedido p 
 WHERE id_cliente = idCliente
 ORDER BY fecha
@@ -151,7 +172,7 @@ RETURN dias_transcurridos;
 END $$
 DELIMITER ;
 
-SELECT DiasDesdeUltimoPedido(1);
+SELECT DiasDesdeUltimoPedido2(1);
 
 -- Función 4: Crea una función llamada CategoriaClienteTexto que reciba el número de categoría y devuelva: 
 
@@ -162,6 +183,8 @@ SELECT DiasDesdeUltimoPedido(1);
 -- "BAJA" para el resto 
 
 -- Ejemplo de uso: SELECT CategoriaClienteTexto(150); 
+
+drop function if exists CategoriaClienteTexto;
 
 SET GLOBAL log_bin_trust_function_creators = 1;
 DELIMITER $$
@@ -182,6 +205,8 @@ DELIMITER ;
 SELECT CategoriaClienteTexto(150) AS Categoria_Texto;
 
 -- Otra forma de hacer la función 4
+
+drop function if exists CategoriaClienteTexto2;
 
 SET GLOBAL log_bin_trust_function_creators = 1;
 DELIMITER $$
@@ -206,6 +231,8 @@ SELECT CategoriaClienteTexto2(250) AS Categoria_Texto;
 -- Función 5: Crea una función llamada ComisionEnPorcentaje que reciba el ID de un comercial y devuelva su comisión en formato porcentaje (ej: "15.50%"). 
 
 -- Ejemplo de uso: SELECT ComisionEnPorcentaje(1); 
+
+drop function if exists ComisionEnPorcentaje;
 
 SET GLOBAL log_bin_trust_function_creators = 1;
 DELIMITER $$
