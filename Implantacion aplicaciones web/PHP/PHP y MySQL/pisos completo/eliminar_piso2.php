@@ -7,8 +7,7 @@ $dbname = "Pisos";
 
 // Crear conexión
 $conn = mysqli_connect($servername, $username, $password, $dbname)
-or  die("Conexión fallida: " . mysqli_connect_error());
-}
+    or die("Conexión fallida: " . mysqli_connect_error());
 
 // Recuperar el ID del formulario
 $id = $_POST['id'];
@@ -25,7 +24,4 @@ if (mysqli_query($conn, $sql)) {
 
 // Cerrar la conexión
 mysqli_close($conn);
-?>
-
-
 ?>

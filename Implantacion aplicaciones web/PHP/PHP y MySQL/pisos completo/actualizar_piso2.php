@@ -16,7 +16,7 @@ $sql = "SELECT * FROM noticias WHERE id = '$id'";
 $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {
-    $row = mysqli_fetch_assoc($result);
+    $row = mysqli_fetch_assoc($result);  
 ?>
       
     <form action="actualizar_piso3.php" method="post">
